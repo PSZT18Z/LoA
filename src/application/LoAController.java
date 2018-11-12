@@ -38,14 +38,14 @@ public class LoAController {
 	private Player currentPlayer;
 	
 	@FXML private void initialize(){	
-				initButtons();
-				initPawns();
-				paintBoard();
-				selectedPoint = new Point(); //  domyslnie jest 0,0 jak checie zmienic to uzywacie .move(x, y)
-				possibleMoves = new boolean[8][8]; // domyslnie wszedzie na false
-				isAnySelected = false;
-				currentPlayer = Player.BLUE;
-			}
+		initButtons();
+		initPawns();
+		paintBoard();
+		selectedPoint = new Point(); //  domyslnie jest 0,0 jak checie zmienic to uzywacie .move(x, y)
+		possibleMoves = new boolean[8][8]; // domyslnie wszedzie na false
+		isAnySelected = false;
+		currentPlayer = Player.BLUE;
+	}
 	
 	private void initButtons(){
 		cells = new Button[8][8];
