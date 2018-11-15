@@ -1,8 +1,6 @@
 package application;
 
-import java.awt.Point;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -16,82 +14,40 @@ public class LoAController {
 	@FXML
 	Label label;
 	
-	//BUTTONY UZYWAMY ICH DALEJ W KODZIE JAK CHCEMY POKOLORWAC JAKAS PLYTKE ALBO NANIESC NA NIA PIONEK
-	private Button cells[][];
-	
-	//POLOZENIE PIONKOW 0 puste, 1 czerwony pionek, -1 niebieski pionek
-	private int pawns[][];
+	private Field fields[][];
 	
 	// nie trzeba tlumaczyc xd
-	private Point selectedPoint;
-	
-	// true oznacza ze wybrany pionek moze sie ruszyc na to miejsce, false ze nie
-	private boolean possibleMoves[][];
-	
-	// TO NAM MOWI CZY JAKIS PIONEK JEST WYBRANY TERAZ CZY NIE
-	private boolean isAnySelected;
-	
-	//TO POPRAWIA CZYELNOSC KODU
-	private enum Player{BLUE, RED}
+	private Field selectedField;
 	
 	// TO NAM MOWI KTORY GRACZ TERAZ MA TURE
-	private Player currentPlayer;
+	private Status currentPlayer;
 	
 	@FXML private void initialize(){	
-		initButtons();
+		initFields();
 		initPawns();
-		paintBoard();
-		selectedPoint = new Point(); //  domyslnie jest 0,0 jak checie zmienic to uzywacie .move(x, y)
-		possibleMoves = new boolean[8][8]; // domyslnie wszedzie na false
-		isAnySelected = false;
-		currentPlayer = Player.BLUE;
+		selectedField = null;
+		currentPlayer = Status.RED;
 	}
 	
-	private void initButtons(){
-		cells = new Button[8][8];
+	private void initFields(){
+		fields = new Field[8][8];
 		
 		for(int row = 0 ; row < 8 ; ++row)
-			for( int column = 0 ; column < 8 ; ++column) {
-				
-				cells[row][column] = new Button();
-				final int i = row, j = column;
-				cells[row][column].setOnAction(e -> buttonClicked(i, j));
-				cells[row][column].setPrefSize(80, 80);
-				grid.add(cells[row][column], column, row);
-			}
+			for( int column = 0 ; column < 8 ; ++column) 
+				fields[row][column] = new Field(row, column, grid, this);
 	}
 	
-	private void buttonClicked(int row, int column) {
+	public void buttonClicked(int row, int column) {
 		
 	}
 	
 	private void initPawns() {
 		
-		pawns = new int[8][8];
-		
-		Image blackPawn = new Image(getClass().getResourceAsStream("black.png"));
-		Image redPawn   = new Image(getClass().getResourceAsStream("red.png"));
-		
 		for(int i = 1 ; i < 7 ; ++i) {
-			cells[i][0].setGraphic(new ImageView(redPawn));
-			cells[i][7].setGraphic(new ImageView(redPawn));
-			cells[0][i].setGraphic(new ImageView(blackPawn));
-			cells[7][i].setGraphic(new ImageView(blackPawn));
-			
-			pawns[i][0] = pawns[i][7] = 1;
-			pawns[0][i] = pawns[7][i] = -1;
+			fields[i][0].setStatus(Status.RED);
+			fields[i][7].setStatus(Status.RED);
+			fields[0][i].setStatus(Status.BLACK);
+			fields[7][i].setStatus(Status.BLACK);
 		}
 	}
-	
-	private void paintBoard() {
-		
-		for(int row = 0 ; row < 8 ; ++row)
-			for( int column = 0 ; column < 8 ; ++column) 
-				if( (row+column)%2 == 0) 
-					cells[row][column].setStyle("-fx-background-color: #ffffff; ");
-				else
-					cells[row][column].setStyle("-fx-background-color: #D3D3D3; ");
-			
-	}
-	
 }

@@ -11,11 +11,11 @@ public class Main extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception{
 		try{
-			FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("LoA.fxml"));
+			FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/LoA.fxml"));
 			Pane root = fxmlLoader.load();
 			Scene scene = new Scene(root);
 			primaryStage.setScene(scene);
-			primaryStage.setTitle("LoA");
+			primaryStage.setTitle("Lines of ACtion");
 			primaryStage.setResizable(false);
 			//LoAController loaController = fxmlLoader.getController();
 			//primaryStage.setOnHiding(e -> loaController.close());
