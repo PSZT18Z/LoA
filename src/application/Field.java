@@ -67,4 +67,13 @@ public class Field {
 		button.setStyle("-fx-background-color: " + color + "; ");
 	}
 	
+	public Status getStatus() {
+		return this.status;
+	}
+	
+	public void setColor(int row, int column) {
+		this.button.setStyle("-fx-background-color: #33ff33");
+	}
+	
+	
 }
