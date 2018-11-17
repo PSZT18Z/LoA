@@ -39,42 +39,48 @@ public class LoAController {
 	
 	public void buttonClicked(int row, int column) {
 		
+		//przypadek wybrania swojego pionka
 		if (selectedField == null && fields[row][column].getStatus() == currentPlayer)
 		{
+			
 			fields[row][column].setType(Type.SELECTED);
 			selectedField = fields[column][row];
 			showMoves(row, column);
-			//selectedField = null;
-			//currentPlayer = (currentPlayer == Status.RED) ? Status.BLACK : Status.RED;
+						
+			return;
 		}
-		else if (selectedField != null && fields[column][row].getType() == Type.MOVE)
+		// wybranie dostepnego miejsca ruchu po wybraniu pionka
+		else if (selectedField != null && fields[row][column].getType() == Type.MOVE)
 		{
-			
-			// kod wykonujacy ruch
-			clearBoard();
-			
-		}	
+			currentPlayer = currentPlayer == Status.RED ? Status.BLACK : Status.RED;
+					
+		}
+		
+		
+		clearBoard();
+		selectedField = null;
+		
 	}
 	
 	private void clearBoard() {
 		for(int r = 0 ; r < 8 ; ++r)
 			for( int c = 0 ; c < 8 ; ++c)
 				fields[r][c].setType(Type.CLEAR);
+		System.out.println("clear");
 	}
 	
 	private void showMoves(int row, int column) {
-		boolean tab[][] = setMoves(row,column);
+		boolean tab[][] = getMoves(row,column);
 		
 		for(int r = 0 ; r < 8 ; ++r)
 			for( int c = 0 ; c < 8 ; ++c)
 				if(tab[r][c] == true)
 				{
 					fields[r][c].setType(Type.MOVE);
+					System.out.println(fields[r][c].getType());				
 				}	
 	}
-	
-
-	
+		
 	private void initPawns() {
 		
 		for(int i = 1 ; i < 7 ; ++i) {
@@ -85,7 +91,7 @@ public class LoAController {
 		}
 	}
 	
-	private int[] showRange (int row, int column) {
+	private int[] getRange (int row, int column) {
 		//tablica zasiegow 
 		int range[] = {0, 0, 0, 0};
 		
@@ -115,8 +121,8 @@ public class LoAController {
 		
 	}
 	
-	private boolean[][] setMoves(int row, int column) {
-		int range[] = showRange(row, column);
+	private boolean[][] getMoves(int row, int column) {
+		int range[] = getRange(row, column);
 		boolean possibleMove[][] = new boolean[8][8];
 		
 		// KTORE POLA MOZE ZAJAC KOLEJNO W POZIOMIE, PIONIE, SKOS (ROSNACO), SKOS (MALEJACO)
