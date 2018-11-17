@@ -31,7 +31,7 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
       </GridPane>
-      <Label fx:id="label" alignment="CENTER" layoutY="14.0" prefHeight="75.0" prefWidth="640.0" text="Current Turn: Blue">
+      <Label fx:id="label" alignment="CENTER" layoutY="14.0" prefHeight="98.0" prefWidth="640.0" text="Current Turn: RED">
          <font>
             <Font size="31.0" />
          </font>
