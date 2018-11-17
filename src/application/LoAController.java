@@ -1,5 +1,8 @@
 package application;
 
+import java.awt.Point;
+import java.util.ArrayList;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -70,15 +73,11 @@ public class LoAController {
 	}
 	
 	private void showMoves(int row, int column) {
-		boolean tab[][] = getMoves(row,column);
+		ArrayList<Point> tab = getMoves(row,column);
 		
-		for(int r = 0 ; r < 8 ; ++r)
-			for( int c = 0 ; c < 8 ; ++c)
-				if(tab[r][c] == true)
-				{
-					fields[r][c].setType(Type.MOVE);
-					System.out.println(fields[r][c].getType());				
-				}	
+		for(int r = 0 ; r < tab.size() ; ++r)
+			tab.stream().forEach((p)-> fields[p.x][p.y].setType(Type.MOVE));
+			
 	}
 		
 	private void initPawns() {
@@ -121,26 +120,29 @@ public class LoAController {
 		
 	}
 	
-	private boolean[][] getMoves(int row, int column) {
+	private ArrayList<Point> getMoves(int row, int column) {
+		
+		ArrayList<Point> possibleMove = new ArrayList<Point>();
 		int range[] = getRange(row, column);
-		boolean possibleMove[][] = new boolean[8][8];
+	
+		
 		
 		// KTORE POLA MOZE ZAJAC KOLEJNO W POZIOMIE, PIONIE, SKOS (ROSNACO), SKOS (MALEJACO)
-		if(column - range[0] >= 0) possibleMove[row][column - range[0]] = true;
-		if(column + range[0] <= 7) possibleMove[row][column + range[0]] = true;
+		if(column - range[0] >= 0)  possibleMove.add(new java.awt.Point(row,column - range[0]));
+		if(column + range[0] <= 7) possibleMove.add(new java.awt.Point(row,column + range[0]));
 		
-		if(row - range[1] >= 0) possibleMove[row - range[1]][column] = true;
-		if(row + range[1] <= 7) possibleMove[row + range[1]][column] = true;
+		if(row - range[1] >= 0) possibleMove.add(new java.awt.Point(row - range[1],column));
+		if(row + range[1] <= 7) possibleMove.add(new java.awt.Point(row + range[1],column));
 		
-		if(column - range[2] >= 0 && row - range[2] >= 0) possibleMove[row - range[2]][column - range[2]] = true;
-		if(column + range[2] <= 7 && row + range[2] <= 7) possibleMove[row + range[2]][column + range[2]] = true;
-		
-		
-		if(row - range[3] >= 0 && column + range[3] <= 7) possibleMove[row - range[3]][column + range[3]] = true;
-		if(row + range[3] <= 7 && column - range[3] >= 0) possibleMove[row + range[3]][column - range[3]] = true;
+		if(column - range[2] >= 0 && row - range[2] >= 0) possibleMove.add(new java.awt.Point(row - range[2],column - range[2]));
+		if(column + range[2] <= 7 && row + range[2] <= 7) possibleMove.add(new java.awt.Point(row + range[2],column + range[2]));
 		
 		
-		return possibleMove;		
+		if(row - range[3] >= 0 && column + range[3] <= 7) possibleMove.add(new java.awt.Point(row - range[3],column + range[3]));
+		if(row + range[3] <= 7 && column - range[3] >= 0) possibleMove.add(new java.awt.Point(row + range[3],column - range[3]));
+		
+		
+		return possibleMove;
 		
 	}
 	
