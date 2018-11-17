@@ -1,6 +1,7 @@
 package application;
 
-public enum Type {
+public enum Type
+{
 	CLEAR,
 	MOVE,
 	SELECTED

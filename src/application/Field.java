@@ -5,8 +5,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 
-public class Field {
-
+public class Field 
+{
 	private int row, column;
 	private Button button;
 	private Status status;

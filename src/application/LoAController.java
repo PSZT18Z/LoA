@@ -7,8 +7,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 
-public class LoAController {
-
+public class LoAController
+{
 	@FXML
 	GridPane grid;
 	
@@ -23,12 +23,15 @@ public class LoAController {
 	// TO NAM MOWI KTORY GRACZ TERAZ MA TURE
 	private Status currentPlayer;
 	
+	private Bot bot;
+	
 	@FXML private void initialize()
 	{	
 		initFields();
 		initPawns();
 		selectedField = null;
 		currentPlayer = Status.RED;
+		bot = new Bot();
 	}
 	
 	private void initFields()
@@ -40,8 +43,8 @@ public class LoAController {
 				fields[row][column] = new Field(row, column, grid, this);
 	}
 	
-	public void buttonClicked(int row, int column) {
-		
+	public void buttonClicked(int row, int column) 
+	{
 		//przypadek wybrania swojego pionka
 		if (selectedField == null && fields[row][column].getStatus() == currentPlayer)
 		{
@@ -86,7 +89,6 @@ public class LoAController {
 		
 	private void initPawns()
 	{
-		
 		for(int i = 1 ; i < 7 ; ++i) 
 		{
 			fields[i][0].setStatus(Status.RED);

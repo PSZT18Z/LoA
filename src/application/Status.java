@@ -1,6 +1,7 @@
 package application;
 
-public enum Status {
+public enum Status 
+{
 	RED,
 	BLACK,
 	EMPTY
