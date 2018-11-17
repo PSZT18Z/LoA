@@ -123,8 +123,8 @@ public class LoAController {
 		if(column - range[0] >= 0) possibleMove.add(new Point(row,column - range[0]));
 		if(column + range[0] <= 7) possibleMove.add(new Point(row,column + range[0]));
 		
-		if(row - range[1] >= 0) possibleMove.add(new java.awt.Point(row - range[1],column));
-		if(row + range[1] <= 7) possibleMove.add(new java.awt.Point(row + range[1],column));
+		if(row - range[1] >= 0) possibleMove.add(new Point(row - range[1],column));
+		if(row + range[1] <= 7) possibleMove.add(new Point(row + range[1],column));
 		
 		if(column - range[2] >= 0 && row - range[2] >= 0) possibleMove.add(new Point(row - range[2],column - range[2]));
 		if(column + range[2] <= 7 && row + range[2] <= 7) possibleMove.add(new Point(row + range[2],column + range[2]));
