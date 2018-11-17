@@ -35,6 +35,7 @@ public class Field {
 	
 	private void buttonClicked() {
 		loAController.buttonClicked(row, column);
+		
 	}
 	
 	public void setStatus(Status status) {
@@ -71,8 +72,8 @@ public class Field {
 		return this.status;
 	}
 	
-	public void setColor(int row, int column) {
-		this.button.setStyle("-fx-background-color: #33ff33");
+	public Type getType() {
+		return this.type;
 	}
 	
 	

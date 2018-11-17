@@ -14,7 +14,7 @@ public class LoAController {
 	@FXML
 	Label label;
 	
-	public Field fields[][];
+	private Field fields[][];
 	
 	// nie trzeba tlumaczyc xd
 	private Field selectedField;
@@ -38,14 +38,39 @@ public class LoAController {
 	}
 	
 	public void buttonClicked(int row, int column) {
-		boolean tab[][] = range(row,column);
+		
+		if (selectedField == null && fields[row][column].getStatus() == currentPlayer)
+		{
+			fields[row][column].setType(Type.SELECTED);
+			selectedField = fields[column][row];
+			showMoves(row, column);
+			//selectedField = null;
+			//currentPlayer = (currentPlayer == Status.RED) ? Status.BLACK : Status.RED;
+		}
+		else if (selectedField != null && fields[column][row].getType() == Type.MOVE)
+		{
+			
+			// kod wykonujacy ruch
+			clearBoard();
+			
+		}	
+	}
+	
+	private void clearBoard() {
+		for(int r = 0 ; r < 8 ; ++r)
+			for( int c = 0 ; c < 8 ; ++c)
+				fields[r][c].setType(Type.CLEAR);
+	}
+	
+	private void showMoves(int row, int column) {
+		boolean tab[][] = setMoves(row,column);
 		
 		for(int r = 0 ; r < 8 ; ++r)
 			for( int c = 0 ; c < 8 ; ++c)
 				if(tab[r][c] == true)
 				{
-					fields[r][c].setColor(r,c);
-				}
+					fields[r][c].setType(Type.MOVE);
+				}	
 	}
 	
 
@@ -60,7 +85,8 @@ public class LoAController {
 		}
 	}
 	
-	private int[] moveRange (int row, int column) {
+	private int[] showRange (int row, int column) {
+		//tablica zasiegow 
 		int range[] = {0, 0, 0, 0};
 		
 		// zasieg ruchu w poziomie
@@ -72,41 +98,26 @@ public class LoAController {
 			if(fields[r][column].getStatus() != Status.EMPTY) range[1]++;
 		
 		// zasieg ruchu po skosie "funkcja rosnaca"
-		
-		int x=row, y=column;
-		while(x < 7 && y > 0)
-		{
-			x++;
-			y--;
-		}
-		
-		for (int r = x, c = y ; (r >= 0 && c <= 7) ; --r, ++c)
-			if(fields[r][c].getStatus() != Status.EMPTY) range[2]++;
+		for(int i = 1; row + i < 8 && column + i < 8 ; ++i)
+			if (fields[row+i][column + i].getStatus() != Status.EMPTY) range[2]++;
 
+		for (int i = 0; row - i >= 0 && column - i >= 0; ++i)
+			if (fields[row - i][column - i].getStatus() != Status.EMPTY) range[2]++;
 		
 		// zasieg ruchu po skosie "funkcja malejaca"
-		int a=row, b=column;
-		while(a > 0 && b > 0)
-		{
-			a--;
-			b--;
-		}
-		
-		for (int r = a, c = b ; (r <=7 && c <= 7) ; ++r, ++c) 
-			if(fields[r][c].getStatus() != Status.EMPTY) range[3]++;
-	
+		for(int i = 1; row + i < 8 && column - i >= 0 ; ++i)
+			if (fields[row + i][column - i].getStatus() != Status.EMPTY) range[3]++;
+
+		for (int i = 0; row - i >= 0 && column + i < 8; ++i)
+			if (fields[row - i][column + i].getStatus() != Status.EMPTY) range[3]++;
+
 		return range;
 		
 	}
 	
-	private boolean[][] range(int row, int column) {
-		int range[] = moveRange(row, column);
+	private boolean[][] setMoves(int row, int column) {
+		int range[] = showRange(row, column);
 		boolean possibleMove[][] = new boolean[8][8];
-		System.out.println(range[0] + " " +  range[1] + " " + range[2] + " " + range[3]);
-		for(int r = 0 ; r < 8 ; ++r)
-			for( int c = 0 ; c < 8 ; ++c) 
-				possibleMove[r][c] =  false;
-	
 		
 		// KTORE POLA MOZE ZAJAC KOLEJNO W POZIOMIE, PIONIE, SKOS (ROSNACO), SKOS (MALEJACO)
 		if(column - range[0] >= 0) possibleMove[row][column - range[0]] = true;
@@ -123,7 +134,7 @@ public class LoAController {
 		if(row + range[3] <= 7 && column - range[3] >= 0) possibleMove[row + range[3]][column - range[3]] = true;
 		
 		
-		return possibleMove;
+		return possibleMove;		
 		
 	}
 	
