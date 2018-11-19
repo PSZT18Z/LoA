@@ -11,18 +11,12 @@ public class LoAController
 {
 	@FXML
 	GridPane grid;
-	
 	@FXML
 	Label label;
 	
 	private Field fields[][];
-	
-	// nie trzeba tlumaczyc xd
 	private Field selectedField;
-	
-	// TO NAM MOWI KTORY GRACZ TERAZ MA TURE
 	private Status currentPlayer;
-	
 	private Bot bot;
 	
 	@FXML private void initialize()
@@ -31,7 +25,7 @@ public class LoAController
 		initPawns();
 		selectedField = null;
 		currentPlayer = Status.RED;
-		bot = new Bot();
+		bot = new Bot(MoveCounter.fieldsToStatus(fields));
 	}
 	
 	private void initFields()
@@ -82,9 +76,9 @@ public class LoAController
 	
 	private void showMoves(int row, int column) 
 	{
-		ArrayList<Point> tab = getMoves(row,column);
+		ArrayList<Point> moves = MoveCounter.getMoves(fields, row,column);
 		
-		tab.stream().forEach((p)-> fields[p.x][p.y].setType(Type.MOVE));
+		moves.forEach((p)-> fields[p.x][p.y].setType(Type.MOVE));
 	}
 		
 	private void initPawns()
@@ -98,56 +92,4 @@ public class LoAController
 		}
 	}
 	
-	private int[] getRange (int row, int column)
-	{
-		//tablica zasiegow 
-		int range[] = {0, 0, 0, 0};
-		
-		// zasieg ruchu w poziomie
-		for(int c = 0 ; c < 8 ; ++c)
-			if(fields[row][c].getStatus() != Status.EMPTY) range[0]++;
-		
-		// zasieg ruchu w pionie
-		for(int r = 0 ; r < 8 ; ++r)
-			if(fields[r][column].getStatus() != Status.EMPTY) range[1]++;
-		
-		// zasieg ruchu po skosie "funkcja rosnaca
-		for(int i = 0; row + i < 8 && column + i < 8 ; ++i)
-			if (fields[row+i][column + i].getStatus() != Status.EMPTY) range[2]++;
-
-		for (int i = 1; row - i >= 0 && column - i >= 0; ++i)
-			if (fields[row - i][column - i].getStatus() != Status.EMPTY) range[2]++;
-		
-		// zasieg ruchu po skosie "funkcja malejaca
-		for(int i = 0; row + i < 8 && column - i >= 0 ; ++i)
-			if (fields[row + i][column - i].getStatus() != Status.EMPTY) range[3]++;
-
-		for(int i = 1; row - i >= 0 && column + i < 8; ++i)
-			if (fields[row - i][column + i].getStatus() != Status.EMPTY) range[3]++;
-
-		return range;
-		
-	}
-	
-	private ArrayList<Point> getMoves(int row, int column)
-	{
-		ArrayList<Point> possibleMove = new ArrayList<Point>();
-		int range[] = getRange(row, column);
-			
-		// KTORE POLA MOZE ZAJAC KOLEJNO W POZIOMIE, PIONIE, SKOS (ROSNACO), SKOS (MALEJACO)
-		if(column - range[0] >= 0) possibleMove.add(new Point(row,column - range[0]));
-		if(column + range[0] <= 7) possibleMove.add(new Point(row,column + range[0]));
-		
-		if(row - range[1] >= 0) possibleMove.add(new Point(row - range[1],column));
-		if(row + range[1] <= 7) possibleMove.add(new Point(row + range[1],column));
-		
-		if(column - range[2] >= 0 && row - range[2] >= 0) possibleMove.add(new Point(row - range[2],column - range[2]));
-		if(column + range[2] <= 7 && row + range[2] <= 7) possibleMove.add(new Point(row + range[2],column + range[2]));
-		
-		
-		if(row - range[3] >= 0 && column + range[3] <= 7) possibleMove.add(new Point(row - range[3],column + range[3]));
-		if(row + range[3] <= 7 && column - range[3] >= 0) possibleMove.add(new Point(row + range[3],column - range[3]));
-		
-		return possibleMove;
-	}
 }

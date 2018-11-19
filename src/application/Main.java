@@ -6,22 +6,24 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
-public class Main extends Application{
+public class Main extends Application
+{
 
 	@Override
-	public void start(Stage primaryStage) throws Exception{
-		try{
+	public void start(Stage primaryStage) throws Exception
+	{
+		try
+		{
 			FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/LoA.fxml"));
 			Pane root = fxmlLoader.load();
 			Scene scene = new Scene(root);
 			primaryStage.setScene(scene);
 			primaryStage.setTitle("Lines of ACtion");
 			primaryStage.setResizable(false);
-			//LoAController loaController = fxmlLoader.getController();
-			//primaryStage.setOnHiding(e -> loaController.close());
 			primaryStage.show();
 		}
-		catch (Exception e){
+		catch (Exception e)
+		{
 			e.printStackTrace();
 		}
 	}

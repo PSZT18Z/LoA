@@ -10,27 +10,10 @@ public class Bot
 	private ArrayList<Point> myPawns, enemyPawns;
 	private Status board[][];
 	
-	public Bot()
+	public Bot(Status[][] board)
 	{
-		initBoard();
+		this.board = board;
 		initPawns();
-	}
-	
-	private void initBoard()
-	{
-		board = new Status[8][8];
-		
-		for(int row = 0 ; row < 8 ; ++row)
-			for(int column = 0 ; column < 8 ; ++column)
-					board[row][column] = Status.EMPTY;
-		
-	    for(int i = 1 ; i < 7 ; ++i) 
-		{
-			board[i][0] = Status.RED;
-			board[i][7] = Status.RED;
-			board[0][i] = Status.BLACK;
-			board[7][i] = Status.BLACK;
-		}	
 	}
 	
 	private void initPawns()
