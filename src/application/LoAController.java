@@ -17,6 +17,7 @@ public class LoAController
 	private Field fields[][];
 	private Field selectedField;
 	private Status currentPlayer;
+	private ArrayList<Point> redPawns, blackPawns;
 	private Bot bot;
 	
 	@FXML private void initialize()
@@ -40,7 +41,7 @@ public class LoAController
 	public void buttonClicked(int row, int column) 
 	{
 		//przypadek wybrania swojego pionka
-		if (selectedField == null && fields[row][column].getStatus() == currentPlayer)
+		if(selectedField == null && fields[row][column].getStatus() == currentPlayer)
 		{
 			selectedField = fields[row][column];
 			selectedField.setType(Type.SELECTED);
@@ -50,15 +51,15 @@ public class LoAController
 		}
 		
 		// wybranie dostepnego miejsca ruchu po wybraniu pionka
-		if (selectedField != null && fields[row][column].getType() == Type.MOVE)
+		if(selectedField != null && fields[row][column].getType() == Type.MOVE)
 		{
 			movePawn(row, column);
+			//checkWin();
 			changePlayer();
 		}
 		
 		clearBoard();
 		selectedField = null;
-		
 	}
 	
 	//przeniesienie pionka po wybraniu wlasciwego pola do przeniesienia
@@ -79,7 +80,6 @@ public class LoAController
 	{
 		currentPlayer = currentPlayer == Status.RED ? Status.BLACK : Status.RED;
 		label.setText("Current Player: " + currentPlayer);
-		
 	}
 	
 	private void showMoves(int row, int column) 
@@ -91,13 +91,20 @@ public class LoAController
 		
 	private void initPawns()
 	{
+		redPawns = new ArrayList<Point>();
+		blackPawns = new ArrayList<Point>();
+		
 		for(int i = 1 ; i < 7 ; ++i) 
 		{
 			fields[i][0].setStatus(Status.RED);
 			fields[i][7].setStatus(Status.RED);
 			fields[0][i].setStatus(Status.BLACK);
 			fields[7][i].setStatus(Status.BLACK);
+			
+			redPawns.add(new Point(i, 0));
+			redPawns.add(new Point(i, 7));
+			blackPawns.add(new Point(0, i));
+			blackPawns.add(new Point(7, i));
 		}
 	}
-	
 }
