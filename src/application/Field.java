@@ -58,11 +58,11 @@ public class Field
 	{
 		String color = "#ffffff";
 		
-		if(type == Type.MOVE) color = "#00ff00";
-		else if(type == Type.SELECTED) color = "#0000ff";
-		else if((row + column)%2 == 0) color = "D3D3D3";
+		if(type == Type.MOVE) color = "#aaffaa";
+		else if(type == Type.SELECTED) color = "#aaaaff";
+		else if((row + column)%2 == 0) color = "#D3D3D3";
 		
-		button.setStyle("-fx-background-color: " + color + "; ");
+		button.setStyle("-fx-background-color: " + color + ";");
 	}
 	
 	public Status getStatus() 

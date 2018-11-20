@@ -52,12 +52,20 @@ public class LoAController
 		// wybranie dostepnego miejsca ruchu po wybraniu pionka
 		if (selectedField != null && fields[row][column].getType() == Type.MOVE)
 		{
+			movePawn(row, column);
 			changePlayer();
 		}
 		
 		clearBoard();
 		selectedField = null;
 		
+	}
+	
+	//przeniesienie pionka po wybraniu wlasciwego pola do przeniesienia
+	private void movePawn(int row, int column)
+	{
+		fields[row][column].setStatus(currentPlayer);
+		selectedField.setStatus(Status.EMPTY);
 	}
 	
 	private void clearBoard() 

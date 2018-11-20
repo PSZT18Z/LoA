@@ -67,56 +67,56 @@ public class MoveCounter
 		for(int i = 1 ; column + i < 8 ; ++i)
 		{
 			if(board[row][column + i] != Status.EMPTY) range[0]++;
-			if(board[row][column + i] == enemy && enemyPawn[0] != 100) enemyPawn[0] = i;
+			if(board[row][column + i] == enemy && enemyPawn[0] == 100) enemyPawn[0] = i;
 		}
 		
 		// W LEWO
 		for(int i = 1 ; column - i >= 0 ; ++i)
 		{
 			if(board[row][column - i] != Status.EMPTY) range[0]++;
-			if(board[row][column - i] == enemy && enemyPawn[1] != 100) enemyPawn[1] = i;
+			if(board[row][column - i] == enemy && enemyPawn[1] == 100) enemyPawn[1] = i;
 		}
 		
 		// W GORE
 		for(int i = 1 ; row + i < 8 ; ++i)
 		{
 			if(board[row + i][column] != Status.EMPTY) range[2]++;
-			if(board[row + i][column] == enemy && enemyPawn[2] != 100) enemyPawn[2] = i;
+			if(board[row + i][column] == enemy && enemyPawn[2] == 100) enemyPawn[2] = i;
 		}
 		
 		// W DOL
 		for(int i = 1 ; row - i >= 0 ; ++i)
 		{
 			if(board[row - i][column] != Status.EMPTY) range[2]++;
-			if(board[row - i][column] == enemy && enemyPawn[3] != 100) enemyPawn[3] = i;
+			if(board[row - i][column] == enemy && enemyPawn[3] == 100) enemyPawn[3] = i;
 		}
 		
 		// GORA PRAWO
 		for(int i = 1; row + i < 8 && column + i < 8 ; ++i)
 		{
 			if(board[row + i][column + i] != Status.EMPTY) range[4]++;
-			if(board[row + i][column + i] == enemy && enemyPawn[4] != 100) enemyPawn[4] = i;
+			if(board[row + i][column + i] == enemy && enemyPawn[4] == 100) enemyPawn[4] = i;
 		}
 		
 		// DOL LEWO
 		for (int i = 1; row - i >= 0 && column - i >= 0; ++i)
 		{
 			if(board[row - i][column - i] != Status.EMPTY) range[4]++;
-			if(board[row - i][column - i] == enemy && enemyPawn[5] != 100) enemyPawn[5] = i;
+			if(board[row - i][column - i] == enemy && enemyPawn[5] == 100) enemyPawn[5] = i;
 		}
 		
 		// GORA LEWO
 		for(int i = 1; row + i < 8 && column - i >= 0 ; ++i)
 		{
 			if(board[row + i][column - i] != Status.EMPTY) range[6]++;
-			if(board[row + i][column - i] == enemy && enemyPawn[6] != 100) enemyPawn[6] = i;
+			if(board[row + i][column - i] == enemy && enemyPawn[6] == 100) enemyPawn[6] = i;
 		}
 
 		// DOL PRAWO
 		for(int i = 1; row - i >= 0 && column + i < 8; ++i)
 		{
 			if(board[row - i][column + i] != Status.EMPTY) range[6]++;
-			if(board[row - i][column + i] == enemy && enemyPawn[7] != 100) enemyPawn[7] = i;
+			if(board[row - i][column + i] == enemy && enemyPawn[7] == 100) enemyPawn[7] = i;
 		}
 		
 		range[1] = range[0]; range[3] = range[2]; range[5] = range[4]; range[7] = range[6];
