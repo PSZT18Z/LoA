@@ -76,7 +76,7 @@ public class LoAController
 	
 	private void showMoves(int row, int column) 
 	{
-		ArrayList<Point> moves = MoveCounter.getMoves(fields, row,column);
+		ArrayList<Point> moves = MoveCounter.getMoves(fields, row, column, currentPlayer);
 		
 		moves.forEach((p)-> fields[p.x][p.y].setType(Type.MOVE));
 	}

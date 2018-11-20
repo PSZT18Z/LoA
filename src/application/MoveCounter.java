@@ -2,6 +2,8 @@ package application;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Arrays;
+
 
 public class MoveCounter 
 {
@@ -16,77 +18,111 @@ public class MoveCounter
 		return output;
 	}
 	
-	public static ArrayList<Point> getMoves(Field[][] fields, int row, int column)
+	public static ArrayList<Point> getMoves(Field[][] fields, int row, int column, Status currentPlayer)
 	{
-		return getMoves(fieldsToStatus(fields), row, column);
+		return getMoves(fieldsToStatus(fields), row, column, currentPlayer);
 	}
 
-	private static ArrayList<Point> getMoves(Status[][] board, int row, int column) 
+	private static ArrayList<Point> getMoves(Status[][] board, int row, int column, Status currentPlayer) 
 	{
 		ArrayList<Point> possibleMove = new ArrayList<Point>();
-		int range[] = getRange(board, row, column);
+		int range[] = getRange(board, row, column, currentPlayer);
 			
 		// KTORE POLA MOZE ZAJAC KOLEJNO W POZIOMIE, PIONIE, SKOS (ROSNACO), SKOS (MALEJACO)
 		// DRUGI WARUNEK W IFACH TO KONTROLA CZY NEI SKACZEMY SWOIM PIONKIEM NA SWOJEGO
-		if((column - range[0] >= 0) && (board[row][column] != board[row][column - range[0]]))
-			possibleMove.add(new Point(row, column - range[0]));
 		if((column + range[0] <= 7) && (board[row][column] != board[row][column + range[0]]))
 			possibleMove.add(new Point(row, column + range[0]));
+		if((column - range[1] >= 0) && (board[row][column] != board[row][column - range[0]]))
+			possibleMove.add(new Point(row, column - range[1]));
 		
-		if((row - range[1] >= 0) && (board[row][column] != board[row - range[1]][column]))
-			possibleMove.add(new Point(row - range[1], column));
-		if((row + range[1] <= 7) && (board[row][column] != board[row + range[1]][column]))
-			possibleMove.add(new Point(row + range[1], column));
+		if((row + range[2] <= 7) && (board[row][column] != board[row + range[2]][column]))
+			possibleMove.add(new Point(row + range[2], column));
+		if((row - range[3] >= 0) && (board[row][column] != board[row - range[3]][column]))
+			possibleMove.add(new Point(row - range[3], column));
 		
-		if((column - range[2] >= 0 && row - range[2] >= 0) && (board[row][column] != board[row - range[2]][column - range[2]]))
-			possibleMove.add(new Point(row - range[2], column - range[2]));
-		if((column + range[2] <= 7 && row + range[2] <= 7) && (board[row][column] != board[row + range[2]][column + range[2]]))
-			possibleMove.add(new Point(row + range[2], column + range[2]));
+		if((column + range[4] <= 7 && row + range[4] <= 7) && (board[row][column] != board[row + range[4]][column + range[4]]))
+			possibleMove.add(new Point(row + range[4], column + range[4]));
+		if((column - range[5] >= 0 && row - range[5] >= 0) && (board[row][column] != board[row - range[5]][column - range[5]]))
+			possibleMove.add(new Point(row - range[5], column - range[5]));
 		
-		
-		if((row - range[3] >= 0 && column + range[3] <= 7) && (board[row][column] != board[row - range[3]][column + range[3]]))
-			possibleMove.add(new Point(row - range[3], column + range[3]));
-		if((row + range[3] <= 7 && column - range[3] >= 0) && (board[row][column] != board[row + range[3]][column - range[3]]))
-			possibleMove.add(new Point(row + range[3], column - range[3]));
-		
-		// TU TRZEBA DODAC FILTROWANIE:
-		// NIE MOZNA PRZZESKAKIWAC WROGICH PIONKOW
-		
-		//MOZNA ZRZOBIC TAK JAK TUTAJ PONIZEJ CHYBA ZE MACIE LEPSZY POMYSL, ITERUJEMY OD TYLU BO OD PRZODU JEST ZLE XD JAK CHCECIE WIEDZIEC DLACZEGO TO NAPISZCIE NA FB
-		
-		//for(int i = possibleMove.size() ; i >= 0 ; -i)
-		//	if(!isValidMove(board, possibleMove.get(i))) possibleMove.remove(i);
-		
+		if((row + range[6] <= 7 && column - range[6] >= 0) && (board[row][column] != board[row + range[6]][column - range[6]]))
+			possibleMove.add(new Point(row + range[6], column - range[6]));
+		if((row - range[7] >= 0 && column + range[7] <= 7) && (board[row][column] != board[row - range[7]][column + range[7]]))
+			possibleMove.add(new Point(row - range[7], column + range[7]));
 		
 		return possibleMove;
 	}
 	
-	private static int[] getRange (Status board[][], int row, int column)
+	private static int[] getRange (Status board[][], int row, int column, Status currentPlayer)
 	{
-		//tablica zasiegow 
-		int range[] = {0, 0, 0, 0};
+		Status enemy = currentPlayer == Status.BLACK ? Status.RED : Status.BLACK;
 		
-		// zasieg ruchu w poziomie
-		for(int c = 0 ; c < 8 ; ++c)
-			if(board[row][c] != Status.EMPTY) range[0]++;
+		// tablica zasiegow 
+		int range[] = new int[8];
+		int enemyPawn[] = new int[8];
+		Arrays.fill(range, 1);
+		Arrays.fill(enemyPawn, 100); // 100 = nieskonczonosc
 		
-		// zasieg ruchu w pionie
-		for(int r = 0 ; r < 8 ; ++r)
-			if(board[r][column] != Status.EMPTY) range[1]++;
+		// W PRAWO
+		for(int i = 1 ; column + i < 8 ; ++i)
+		{
+			if(board[row][column + i] != Status.EMPTY) range[0]++;
+			if(board[row][column + i] == enemy && enemyPawn[0] != 100) enemyPawn[0] = i;
+		}
 		
-		// zasieg ruchu po skosie "funkcja rosnaca
-		for(int i = 0; row + i < 8 && column + i < 8 ; ++i)
-			if (board[row+i][column + i] != Status.EMPTY) range[2]++;
-
+		// W LEWO
+		for(int i = 1 ; column - i >= 0 ; ++i)
+		{
+			if(board[row][column - i] != Status.EMPTY) range[0]++;
+			if(board[row][column - i] == enemy && enemyPawn[1] != 100) enemyPawn[1] = i;
+		}
+		
+		// W GORE
+		for(int i = 1 ; row + i < 8 ; ++i)
+		{
+			if(board[row + i][column] != Status.EMPTY) range[2]++;
+			if(board[row + i][column] == enemy && enemyPawn[2] != 100) enemyPawn[2] = i;
+		}
+		
+		// W DOL
+		for(int i = 1 ; row - i >= 0 ; ++i)
+		{
+			if(board[row - i][column] != Status.EMPTY) range[2]++;
+			if(board[row - i][column] == enemy && enemyPawn[3] != 100) enemyPawn[3] = i;
+		}
+		
+		// GORA PRAWO
+		for(int i = 1; row + i < 8 && column + i < 8 ; ++i)
+		{
+			if(board[row + i][column + i] != Status.EMPTY) range[4]++;
+			if(board[row + i][column + i] == enemy && enemyPawn[4] != 100) enemyPawn[4] = i;
+		}
+		
+		// DOL LEWO
 		for (int i = 1; row - i >= 0 && column - i >= 0; ++i)
-			if (board[row - i][column - i] != Status.EMPTY) range[2]++;
+		{
+			if(board[row - i][column - i] != Status.EMPTY) range[4]++;
+			if(board[row - i][column - i] == enemy && enemyPawn[5] != 100) enemyPawn[5] = i;
+		}
 		
-		// zasieg ruchu po skosie "funkcja malejaca
-		for(int i = 0; row + i < 8 && column - i >= 0 ; ++i)
-			if (board[row + i][column - i] != Status.EMPTY) range[3]++;
+		// GORA LEWO
+		for(int i = 1; row + i < 8 && column - i >= 0 ; ++i)
+		{
+			if(board[row + i][column - i] != Status.EMPTY) range[6]++;
+			if(board[row + i][column - i] == enemy && enemyPawn[6] != 100) enemyPawn[6] = i;
+		}
 
+		// DOL PRAWO
 		for(int i = 1; row - i >= 0 && column + i < 8; ++i)
-			if (board[row - i][column + i] != Status.EMPTY) range[3]++;
+		{
+			if(board[row - i][column + i] != Status.EMPTY) range[6]++;
+			if(board[row - i][column + i] == enemy && enemyPawn[7] != 100) enemyPawn[7] = i;
+		}
+		
+		range[1] = range[0]; range[3] = range[2]; range[5] = range[4]; range[7] = range[6];
+		
+		for(int i = 0 ; i < 8 ; ++i)
+			if(enemyPawn[i] < range[i]) range[i] = 0;
 
 		return range;
 	}
