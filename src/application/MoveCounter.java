@@ -32,7 +32,7 @@ public class MoveCounter
 		// DRUGI WARUNEK W IFACH TO KONTROLA CZY NEI SKACZEMY SWOIM PIONKIEM NA SWOJEGO
 		if((column + range[0] <= 7) && (board[row][column] != board[row][column + range[0]]))
 			possibleMove.add(new Point(row, column + range[0]));
-		if((column - range[1] >= 0) && (board[row][column] != board[row][column - range[0]]))
+		if((column - range[1] >= 0) && (board[row][column] != board[row][column - range[1]]))
 			possibleMove.add(new Point(row, column - range[1]));
 		
 		if((row + range[2] <= 7) && (board[row][column] != board[row + range[2]][column]))
