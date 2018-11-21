@@ -2,7 +2,6 @@ package application;
 
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -17,8 +16,7 @@ public class LoAController
 	
 	private Field fields[][];
 	private Field selectedField;
-	private Status currentPlayer;
-	private Status waitingPlayer;
+	private Status currentPlayer, waitingPlayer;
 	private ArrayList<Point> redPawns, blackPawns;
 	private Bot bot;
 	
@@ -56,22 +54,7 @@ public class LoAController
 		// wybranie dostepnego miejsca ruchu po wybraniu pionka
 		if(selectedField != null && fields[row][column].getType() == Type.MOVE)
 		{	
-			if(currentPlayer == Status.BLACK) {
-				
-				if(fields[row][column].getStatus()==waitingPlayer) {
-					removePawn(redPawns, row, column);
-					movePawn(blackPawns,row, column);
-				} else {
-					movePawn(blackPawns,row, column);
-				}
-			} else if(currentPlayer == Status.RED){
-				if(fields[row][column].getStatus()==waitingPlayer) {
-					removePawn(blackPawns, row, column);
-					movePawn(redPawns, row, column);
-				} else {
-					movePawn(redPawns, row, column);
-				}
-			}
+			moveSelected(row, column);
 			//checkWin();
 			changePlayer();
 		}
@@ -80,22 +63,32 @@ public class LoAController
 		selectedField = null;
 	}
 	//usuniecie pionka
-	private void removePawn(ArrayList<Point> pawns, int row, int column) {
-		pawns.remove(new Point(row,column));
-	}
-	//przeniesienie pionka po wybraniu wlasciwego pola do przeniesienia
-	private void movePawn(ArrayList<Point> pawns, int row, int column)
+	private void removePawn(int row, int column)
 	{
-		//pawns.remove(new Point(selectedField.getRow(),selectedField.getColumn()));
-		//pawns.add(new Point(row, column));
-		//pawns.mo
-		Point tmp = new Point(selectedField.getRow(),selectedField.getColumn());
-		for(int i=0;i<pawns.size();i++) {
-			if(pawns.get(i).equals(tmp)) {
-				pawns.get(i).move(row,column);
+		ArrayList<Point> pawns = waitingPlayer == Status.RED ? redPawns : blackPawns;
+		
+		for(int i = 0 ; i < pawns.size() ; ++i) 
+			if(pawns.get(i).x == row && pawns.get(i).y == column) 
+			{
+				pawns.remove(i);
 				break;
 			}
-		}
+	}
+	//przeniesienie pionka po wybraniu wlasciwego pola do przeniesienia
+	private void moveSelected(int row, int column)
+	{
+		ArrayList<Point> pawns = currentPlayer == Status.RED ? redPawns : blackPawns;
+		
+		for(int i = 0 ; i < pawns.size() ; ++i) 
+			if(pawns.get(i).x == selectedField.getRow() && pawns.get(i).y == selectedField.getColumn()) 
+			{
+				pawns.get(i).move(row, column);
+				break;
+			}
+		
+		if(fields[row][column].getStatus() == waitingPlayer)
+			removePawn(row, column);
+		
 		fields[row][column].setStatus(currentPlayer);
 		selectedField.setStatus(Status.EMPTY);
 	}
@@ -109,8 +102,8 @@ public class LoAController
 	
 	private void changePlayer()
 	{
+		waitingPlayer = currentPlayer;
 		currentPlayer = currentPlayer == Status.RED ? Status.BLACK : Status.RED;
-		waitingPlayer = waitingPlayer == Status.RED ? Status.BLACK : Status.RED;
 		label.setText("Current Player: " + currentPlayer);
 	}
 	
