@@ -2,6 +2,7 @@ package application;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -17,6 +18,7 @@ public class LoAController
 	private Field fields[][];
 	private Field selectedField;
 	private Status currentPlayer;
+	private Status waitingPlayer;
 	private ArrayList<Point> redPawns, blackPawns;
 	private Bot bot;
 	
@@ -26,6 +28,7 @@ public class LoAController
 		initPawns();
 		selectedField = null;
 		currentPlayer = Status.RED;
+		waitingPlayer = Status.BLACK;
 		bot = new Bot(MoveCounter.fieldsToStatus(fields));
 	}
 	
@@ -53,17 +56,16 @@ public class LoAController
 		// wybranie dostepnego miejsca ruchu po wybraniu pionka
 		if(selectedField != null && fields[row][column].getType() == Type.MOVE)
 		{	
-			Status tmp = getOpponentsStatus();
 			if(currentPlayer == Status.BLACK) {
 				
-				if(fields[row][column].getStatus()==tmp) {
+				if(fields[row][column].getStatus()==waitingPlayer) {
 					removePawn(redPawns, row, column);
 					movePawn(blackPawns,row, column);
 				} else {
 					movePawn(blackPawns,row, column);
 				}
 			} else if(currentPlayer == Status.RED){
-				if(fields[row][column].getStatus()==tmp) {
+				if(fields[row][column].getStatus()==waitingPlayer) {
 					removePawn(blackPawns, row, column);
 					movePawn(redPawns, row, column);
 				} else {
@@ -77,10 +79,6 @@ public class LoAController
 		clearBoard();
 		selectedField = null;
 	}
-	//uzyskanie statusu przeciwnika
-	private Status getOpponentsStatus(){
-		return currentPlayer == Status.RED? Status.BLACK : Status.RED;
-	}
 	//usuniecie pionka
 	private void removePawn(ArrayList<Point> pawns, int row, int column) {
 		pawns.remove(new Point(row,column));
@@ -88,8 +86,16 @@ public class LoAController
 	//przeniesienie pionka po wybraniu wlasciwego pola do przeniesienia
 	private void movePawn(ArrayList<Point> pawns, int row, int column)
 	{
-		pawns.remove(new Point(selectedField.getRow(),selectedField.getColumn()));
-		pawns.add(new Point(row, column));
+		//pawns.remove(new Point(selectedField.getRow(),selectedField.getColumn()));
+		//pawns.add(new Point(row, column));
+		//pawns.mo
+		Point tmp = new Point(selectedField.getRow(),selectedField.getColumn());
+		for(int i=0;i<pawns.size();i++) {
+			if(pawns.get(i).equals(tmp)) {
+				pawns.set(i, new Point(row,column));
+				break;
+			}
+		}
 		fields[row][column].setStatus(currentPlayer);
 		selectedField.setStatus(Status.EMPTY);
 	}
@@ -104,6 +110,7 @@ public class LoAController
 	private void changePlayer()
 	{
 		currentPlayer = currentPlayer == Status.RED ? Status.BLACK : Status.RED;
+		waitingPlayer = waitingPlayer == Status.RED ? Status.BLACK : Status.RED;
 		label.setText("Current Player: " + currentPlayer);
 	}
 	
