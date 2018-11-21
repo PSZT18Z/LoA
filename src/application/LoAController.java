@@ -66,13 +66,7 @@ public class LoAController
 	private void removePawn(int row, int column)
 	{
 		ArrayList<Point> pawns = waitingPlayer == Status.RED ? redPawns : blackPawns;
-		
-		for(int i = 0 ; i < pawns.size() ; ++i) 
-			if(pawns.get(i).x == row && pawns.get(i).y == column) 
-			{
-				pawns.remove(i);
-				break;
-			}
+		pawns.remove(new Point(row, column));
 	}
 	//przeniesienie pionka po wybraniu wlasciwego pola do przeniesienia
 	private void moveSelected(int row, int column)
@@ -86,7 +80,7 @@ public class LoAController
 				break;
 			}
 		
-		if(fields[row][column].getStatus() == waitingPlayer)
+		if(fields[row][column].getStatus() == waitingPlayer )
 			removePawn(row, column);
 		
 		fields[row][column].setStatus(currentPlayer);
