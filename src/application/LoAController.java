@@ -92,7 +92,7 @@ public class LoAController
 		Point tmp = new Point(selectedField.getRow(),selectedField.getColumn());
 		for(int i=0;i<pawns.size();i++) {
 			if(pawns.get(i).equals(tmp)) {
-				pawns.set(i, new Point(row,column));
+				pawns.get(i).move(row,column);
 				break;
 			}
 		}
