@@ -17,7 +17,7 @@ public class Main extends Application
 			Pane root = fxmlLoader.load();
 			Scene scene = new Scene(root);
 			primaryStage.setScene(scene);
-			primaryStage.setTitle("Lines of ACtion");
+			primaryStage.setTitle("Lines of Action");
 			primaryStage.setResizable(false);
 			primaryStage.show();
 		}

@@ -52,8 +52,24 @@ public class LoAController
 		
 		// wybranie dostepnego miejsca ruchu po wybraniu pionka
 		if(selectedField != null && fields[row][column].getType() == Type.MOVE)
-		{
-			movePawn(row, column);
+		{	
+			Status tmp = getOpponentsStatus();
+			if(currentPlayer == Status.BLACK) {
+				
+				if(fields[row][column].getStatus()==tmp) {
+					removePawn(redPawns, row, column);
+					movePawn(blackPawns,row, column);
+				} else {
+					movePawn(blackPawns,row, column);
+				}
+			} else if(currentPlayer == Status.RED){
+				if(fields[row][column].getStatus()==tmp) {
+					removePawn(blackPawns, row, column);
+					movePawn(redPawns, row, column);
+				} else {
+					movePawn(redPawns, row, column);
+				}
+			}
 			//checkWin();
 			changePlayer();
 		}
@@ -61,10 +77,19 @@ public class LoAController
 		clearBoard();
 		selectedField = null;
 	}
-	
+	//uzyskanie statusu przeciwnika
+	private Status getOpponentsStatus(){
+		return currentPlayer == Status.RED? Status.BLACK : Status.RED;
+	}
+	//usuniecie pionka
+	private void removePawn(ArrayList<Point> pawns, int row, int column) {
+		pawns.remove(new Point(row,column));
+	}
 	//przeniesienie pionka po wybraniu wlasciwego pola do przeniesienia
-	private void movePawn(int row, int column)
+	private void movePawn(ArrayList<Point> pawns, int row, int column)
 	{
+		pawns.remove(new Point(selectedField.getRow(),selectedField.getColumn()));
+		pawns.add(new Point(row, column));
 		fields[row][column].setStatus(currentPlayer);
 		selectedField.setStatus(Status.EMPTY);
 	}
