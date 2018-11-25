@@ -4,6 +4,8 @@ import java.awt.Point;
 import java.util.ArrayList;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 
@@ -25,9 +27,9 @@ public class LoAController
 		initFields();
 		initPawns();
 		selectedField = null;
-		currentPlayer = Status.RED;
-		waitingPlayer = Status.BLACK;
-		bot = new Bot(MoveCounter.fieldsToStatus(fields));
+		currentPlayer = Status.BLACK;
+		waitingPlayer = Status.RED;
+		bot = new Bot(BoardManager.fieldsToStatus(fields), this);
 	}
 	
 	private void initFields()
@@ -55,12 +57,23 @@ public class LoAController
 		if(selectedField != null && fields[row][column].getType() == Type.MOVE)
 		{	
 			moveSelected(row, column);
-			//checkWin();
+			
+			bot.moveMade(new Point(selectedField.getRow(), selectedField.getColumn()), new Point(row, column), currentPlayer);
+			
+			if(BoardManager.checkWin(fields, currentPlayer == Status.BLACK ? blackPawns : redPawns, currentPlayer))
+				endGame(true);
+			
+			if(!enemyHasMoves())
+				endGame(false);
+			
 			changePlayer();
+			
 		}
 		
 		clearBoard();
 		selectedField = null;
+		
+		if(currentPlayer == Status.RED) bot.makeMove();
 	}
 	//usuniecie pionka
 	private void removePawn(int row, int column)
@@ -98,12 +111,16 @@ public class LoAController
 	{
 		waitingPlayer = currentPlayer;
 		currentPlayer = currentPlayer == Status.RED ? Status.BLACK : Status.RED;
-		label.setText("Current Player: " + currentPlayer);
+		
+		if(currentPlayer == Status.BLACK)
+			label.setText("Your Turn (" + currentPlayer + ")");
+		else
+			label.setText("Computer Turn (" + currentPlayer + ")");
 	}
 	
 	private void showMoves(int row, int column) 
 	{
-		ArrayList<Point> moves = MoveCounter.getMoves(fields, row, column, currentPlayer);
+		ArrayList<Point> moves = BoardManager.getMoves(fields, row, column, currentPlayer);
 		
 		moves.forEach((p)-> fields[p.x][p.y].setType(Type.MOVE));
 	}
@@ -125,5 +142,35 @@ public class LoAController
 			blackPawns.add(new Point(0, i));
 			blackPawns.add(new Point(7, i));
 		}
+	}
+	
+	private void endGame(boolean isNormalVictory)
+	{
+		label.setText(currentPlayer + " has Won!");
+		Alert alert = new Alert(AlertType.INFORMATION);
+		alert.setTitle("Game has ended");
+		alert.setHeaderText(currentPlayer + " has Won!");
+		if(isNormalVictory)
+			alert.setContentText(currentPlayer + " formed a group with his pawns!");
+		else 
+			alert.setContentText(waitingPlayer + " has no moves!");
+		alert.showAndWait();
+		
+		System.exit(0);
+	}
+	
+	private boolean enemyHasMoves()
+	{
+		ArrayList<Point> pawns = waitingPlayer == Status.RED ? redPawns : blackPawns;
+		
+		for(Point p : pawns)
+			if(BoardManager.getMoves(fields, p.x, p.y, currentPlayer).size() != 0) return true;
+		
+		return false;
+	}
+	
+	public Status getCurrentPlayer()
+	{
+		return currentPlayer;
 	}
 }

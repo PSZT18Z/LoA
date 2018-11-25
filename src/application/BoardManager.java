@@ -4,8 +4,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-
-public class MoveCounter 
+public class BoardManager 
 {
 	public static Status[][] fieldsToStatus(Field[][] fields)
 	{
@@ -23,7 +22,7 @@ public class MoveCounter
 		return getMoves(fieldsToStatus(fields), row, column, currentPlayer);
 	}
 
-	private static ArrayList<Point> getMoves(Status[][] board, int row, int column, Status currentPlayer) 
+	public static ArrayList<Point> getMoves(Status[][] board, int row, int column, Status currentPlayer) 
 	{
 		ArrayList<Point> possibleMove = new ArrayList<Point>();
 		int range[] = getRange(board, row, column, currentPlayer);
@@ -53,7 +52,7 @@ public class MoveCounter
 		return possibleMove;
 	}
 	
-	private static int[] getRange (Status board[][], int row, int column, Status currentPlayer)
+	private static int[] getRange(Status board[][], int row, int column, Status currentPlayer)
 	{
 		Status enemy = currentPlayer == Status.BLACK ? Status.RED : Status.BLACK;
 		
@@ -125,5 +124,31 @@ public class MoveCounter
 			if(enemyPawn[i] < range[i]) range[i] = 0;
 
 		return range;
+	}
+
+	public static boolean checkWin(Field[][] fields, ArrayList<Point> pawns, Status currentPlayer)
+	{
+		return checkWin(fieldsToStatus(fields), pawns, currentPlayer);
+	}
+	
+	public static boolean checkWin(Status[][] board, ArrayList<Point> pawns, Status currentPlayer)
+	{
+		ArrayList<Point> connected = new ArrayList<Point>();  
+		connected.add(pawns.get(0));
+		
+		for(int i = 0 ; i < connected.size() ; ++i)
+		{
+			Point p = connected.get(i);
+			int row = p.x, column = p.y; 
+			
+			for(int j = -1 ; j < 2 ; ++j)
+				for(int k = -1; k < 2 ; ++k)
+					if(row + j >= 0 && row + j < 8 && column + k >= 0 && column + k < 8
+					&& board[row + j][column + k] == currentPlayer
+					&& !connected.contains(new Point(row + j, column +k)))
+					    	connected.add(new Point(row + j, column + k));
+		}
+		
+		return connected.size() == pawns.size();
 	}
 }

@@ -29,7 +29,8 @@ public class Field
 	
 	private void buttonClicked() 
 	{
-		loAController.buttonClicked(row, column);
+		if(loAController.getCurrentPlayer() == Status.BLACK)
+			loAController.buttonClicked(row, column);
 	}
 	
 	public void setStatus(Status status)
@@ -58,8 +59,8 @@ public class Field
 	{
 		String color = "#ffffff";
 		
-		if(type == Type.MOVE) color = "#aaffaa";
-		else if(type == Type.SELECTED) color = "#aaaaff";
+		if(type == Type.MOVE) color = "#cfff00";
+		else if(type == Type.SELECTED) color = "#87ceeb";
 		else if((row + column)%2 == 0) color = "#D3D3D3";
 		
 		button.setStyle("-fx-background-color: " + color + ";");
