@@ -3,6 +3,7 @@ package application;
 import java.awt.Point;
 import java.util.ArrayList;
 
+import javafx.application.Platform;
 import javafx.util.Pair;
 
 public class Bot 
@@ -91,7 +92,7 @@ public class Bot
 		alphaBeta(board, myPawns, enemyPawns, Status.RED, depth, -1000, 1000);
 		
 		controller.buttonClicked(move.getKey().x, move.getKey().y);
-		controller.buttonClicked(move.getValue().x, move.getValue().y);
+		Platform.runLater(() -> controller.buttonClicked(move.getValue().x, move.getValue().y));
 	}
 	
 	private float alphaBeta(Status board[][], ArrayList<Point> movingPawns, ArrayList<Point> waitingPawns, Status movingPlayer, int depth, float alpha, float beta)

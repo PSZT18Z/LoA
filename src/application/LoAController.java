@@ -3,6 +3,7 @@ package application;
 import java.awt.Point;
 import java.util.ArrayList;
 
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -73,7 +74,21 @@ public class LoAController
 		clearBoard();
 		selectedField = null;
 		
-		if(currentPlayer == Status.RED) bot.makeMove();
+		if(currentPlayer == Status.RED)
+			runBotMoveThread();
+	}
+	
+	private void runBotMoveThread()
+	{
+		Thread thread = new Thread(new Runnable()
+		{
+			public void run()
+			{
+				bot.makeMove();
+			}
+		});
+		
+		thread.start();
 	}
 	//usuniecie pionka
 	private void removePawn(int row, int column)
