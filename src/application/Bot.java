@@ -151,8 +151,6 @@ public class Bot
 		// bot symuluje klikniecie dwoch pól
 		controller.buttonClicked(move.getKey().x, move.getKey().y);
 		Platform.runLater(() -> controller.buttonClicked(move.getValue().x, move.getValue().y));
-		
-		move = null;
 	}
 	
 	// alg obliczjacy optymalny ruch
