@@ -4,8 +4,11 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+// obliczanie mozliwych ruchow oraz sprawdzanie warunkow zwyciestwa. Korzysta z niej zarowno bot jak i controller gry
 public class BoardManager 
 {
+	// Zmiana reprezentacji planszy która posluguje się controller na wersje prostsza która posługuje się bot
+	// Field[][] -> Status[][]
 	public static Status[][] fieldsToStatus(Field[][] fields)
 	{
 		Status output[][] = new Status[8][8];
@@ -17,18 +20,22 @@ public class BoardManager
 		return output;
 	}
 	
+	// metoda wywolana przez controller
 	public static ArrayList<Point> getMoves(Field[][] fields, int row, int column, Status currentPlayer)
 	{
 		return getMoves(fieldsToStatus(fields), row, column, currentPlayer);
 	}
 
+	// metoda wywolana przez bota
 	public static ArrayList<Point> getMoves(Status[][] board, int row, int column, Status currentPlayer) 
 	{
 		ArrayList<Point> possibleMove = new ArrayList<Point>();
+		// pobranie zasiegu ruchu w konkretnych kierunkach
+		// 0-Prawo, 1-Lewo, 2-Gora, 3-Dol, 4-GoraPrawo, 5-DolLewo, 6-GoraLewo, 7-DolPrawo
 		int range[] = getRange(board, row, column, currentPlayer);
 			
-		// KTORE POLA MOZE ZAJAC KOLEJNO W POZIOMIE, PIONIE, SKOS (ROSNACO), SKOS (MALEJACO)
-		// DRUGI WARUNEK W IFACH TO KONTROLA CZY NEI SKACZEMY SWOIM PIONKIEM NA SWOJEGO
+		// sprwadzenie czy nie wychodzimy danym ruchem za plaszne, jesli nie to dodajemy go do mozliwych ruchow
+		// drugi warunek w ifach to sprawdzenie czy nie skaczemy swoim pionkiem na swojego
 		if((column + range[0] <= 7) && (board[row][column] != board[row][column + range[0]]))
 			possibleMove.add(new Point(row, column + range[0]));
 		if((column - range[1] >= 0) && (board[row][column] != board[row][column - range[1]]))
@@ -56,11 +63,20 @@ public class BoardManager
 	{
 		Status enemy = currentPlayer == Status.BLACK ? Status.RED : Status.BLACK;
 		
-		// tablica zasiegow 
+		// 0-Prawo, 1-Lewo, 2-Gora, 3-Dol, 4-GoraPrawo, 5-DolLewo, 6-GoraLewo, 7-DolPrawo
+		
+		// tablica zasiegow teoretycznie zasieg w gore i w dol jest taki sam,ale
+		// mozliwe jest ze np. ruch w dol jest blokowany przez przeciwny pionek
 		int range[] = new int[8];
+		
+		// pozycja najblizszego przeciwnego pionak w danym kierunku
 		int enemyPawn[] = new int[8];
-		Arrays.fill(range, 1);
+		
+		Arrays.fill(range, 1);       // 1 na start bo pionek dla ktorego liczymy ruchy zapewnia 1 mozliwy ruch w kazda strone
 		Arrays.fill(enemyPawn, 100); // 100 = nieskonczonosc
+		
+	// LICZYMY RUCHY OD DANEGO PIONKA W KOLEJNE MOZLIWE KIERUNKI:
+	// drugi warunek w kazdej petli oblicza pozycja najblizszego przeciwnego pionka w danym kierunku
 		
 		// W PRAWO
 		for(int i = 1 ; column + i < 8 ; ++i)
@@ -120,22 +136,30 @@ public class BoardManager
 		
 		range[1] = range[0]; range[3] = range[2]; range[5] = range[4]; range[7] = range[6];
 		
+		// oceniamy czy dany ruch jest blokowany przez przeciwny pionek
 		for(int i = 0 ; i < 8 ; ++i)
 			if(enemyPawn[i] < range[i]) range[i] = 0;
 
 		return range;
 	}
 
+	// metoda wywolywana przez controller
 	public static boolean checkWin(Field[][] fields, ArrayList<Point> pawns, Status currentPlayer)
 	{
 		return checkWin(fieldsToStatus(fields), pawns, currentPlayer);
 	}
 	
+	// metoda wywolywana przez bota
+	// sprawdzamy czy spelnione zostaly warunki zwyciestwa
+	// przeszukiwanie wszerz
 	public static boolean checkWin(Status[][] board, ArrayList<Point> pawns, Status currentPlayer)
 	{
 		ArrayList<Point> connected = new ArrayList<Point>();  
+		
+		//dodajemy jednego pionka do tablicy stanow polaczonych
 		connected.add(pawns.get(0));
 		
+		// przechodzimy po tablicy stanow polaczonych i dodajemy do niej sasiadów pionków znajdujacych się w tablicy
 		for(int i = 0 ; i < connected.size() ; ++i)
 		{
 			Point p = connected.get(i);
@@ -143,12 +167,13 @@ public class BoardManager
 			
 			for(int j = -1 ; j < 2 ; ++j)
 				for(int k = -1; k < 2 ; ++k)
-					if(row + j >= 0 && row + j < 8 && column + k >= 0 && column + k < 8
-					&& board[row + j][column + k] == currentPlayer
-					&& !connected.contains(new Point(row + j, column +k)))
+					if(row + j >= 0 && row + j < 8 && column + k >= 0 && column + k < 8 // unikamy wyjscia za plansze
+					&& board[row + j][column + k] == currentPlayer		   // dodajemy sąsiadów tylko o tym samym kolorze
+					&& !connected.contains(new Point(row + j, column +k))) // unikamy duplikacji
 					    	connected.add(new Point(row + j, column + k));
 		}
 		
+		// jezeli tablica stanow odwiedzonych posiada wyszstkie pionki danego koloru na mapie, tzn ze sa one polaczone w jedna grp
 		return connected.size() == pawns.size();
 	}
 }

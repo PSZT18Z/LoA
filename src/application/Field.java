@@ -5,12 +5,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 
+// reprezentacja pola na planszy okienka gry NIE BOTA!!
 public class Field 
 {
 	private int row, column;
 	private Button button;
-	private Status status;
-	private Type type;
+	private Status status; // na polu znajduje sie: RED- czerwony pionek, BLACK- czarnypionek, empty- pole puste
+	private Type type;	   // CLEAR- pole czyste, MOVE- pole na ktore mozna sie ruszyc, SELECTED- pole akutalnie wybrane
 	private LoAController loAController;
 	
 	public Field(int row, int column, GridPane grid, LoAController loAController)
@@ -27,8 +28,10 @@ public class Field
 		grid.add(button, column, row);
 	}
 	
+	// metoda wywolywana gdy klikniete zostanie pole
 	private void buttonClicked() 
 	{
+		// jezeli jest tura bota, to nie pozwalamy graczowi klikać pól
 		if(loAController.getCurrentPlayer() == Status.BLACK)
 			loAController.buttonClicked(row, column);
 	}
@@ -36,13 +39,13 @@ public class Field
 	public void setStatus(Status status)
 	{
 		this.status = status;
-		drawPawn();
+		drawPawn(); // przy zmiane statusu rysujemy na polu pionka lub usuwamy z niego pionka
 	}
 	
 	public void setType(Type type) 
 	{
 		this.type = type;
-		drawType();
+		drawType(); // przu zmianie typu zmieniamy kolor pola
 	}
 	
 	private void drawPawn()
@@ -52,16 +55,17 @@ public class Field
 		if(status == Status.BLACK) pawn = new Image(getClass().getResourceAsStream("/black.png"));
 		else if(status == Status.RED) pawn = new Image(getClass().getResourceAsStream("/red.png"));
 			
-		button.setGraphic(new ImageView(pawn)); // JESLI BYLO STATUS EMPTY TO TU WEJDZIE NULL I OBRAZEK ZNIKNIEI ALBO NIC SIE NIE STANIE
+		button.setGraphic(new ImageView(pawn)); // jezeli ominie ify, i poda jako arg null to metoda wyczysci nam pole
+												// (jezeli byly pionki to je usunie)
 	}
 	
 	private void drawType() 
 	{
-		String color = "#ffffff";
+		String color = "#ffffff"; // kolor bialy
 		
-		if(type == Type.MOVE) color = "#cfff00";
-		else if(type == Type.SELECTED) color = "#87ceeb";
-		else if((row + column)%2 == 0) color = "#D3D3D3";
+		if(type == Type.MOVE) color = "#cfff00"; // cieply zielony
+		else if(type == Type.SELECTED) color = "#87ceeb"; // bblekitny
+		else if((row + column)%2 == 0) color = "#D3D3D3"; // co drugie pole na szaro aby cala plansza nie byla tylko biala
 		
 		button.setStyle("-fx-background-color: " + color + ";");
 	}
