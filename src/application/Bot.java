@@ -14,7 +14,19 @@ public class Bot
 	private Status board[][];
 	private LoAController controller;
 	private Pair<Point, Point> move;
-	private int minMoves[] = {0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14};
+	private final int minMoves[] = {0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14};
+	private final int positionValue[][] = 
+					  {
+							{-2, -1, -1, -1, -1, -1, -1, -2},
+							{-1, 0 , 0 , 0 , 0 , 0 , 0 , -1},
+							{-1, 0 , 1 , 1 , 1 , 1 , 0 , -1},
+							{-1, 0 , 1 , 2 , 2 , 1 , 0 , -1},
+							{-1, 0 , 1 , 2 , 2 , 1 , 0 , -1},
+							{-1, 0 , 1 , 1 , 1 , 1 , 0 , -1},
+							{-1, 0 , 0 , 0 , 0 , 0 , 0 , -1},
+							{-2, -1, -1, -1, -1, -1, -1, -2},
+					  };
+	private final int maxPosValue[] = {0, 2, 4, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16};
 	
 	public Bot(Status board[][], LoAController controller)
 	{
@@ -64,13 +76,26 @@ public class Bot
 	private float h(Status board[][], ArrayList<Point> pawns)
 	{
 		int centerRow = 0, centerColumn = 0;
-		int distanceSum = 0;
 		int diffX, diffY;
+		int minX =  1000, minY =  1000;
+		int maxX = -1000, maxY = -1000;
+		
+		float comV = 0f; // center of mass value
+		float comW = 1f; // center of mass weight
+		float centV = 0f;// centralisation value
+		float centW = 0.3f;// centralisation weight
+		float uniV = 1f; // unity value
+		float uniW = 1f; // unity weight
 		
 		for(Point p : pawns)
 		{
 			centerRow += p.x;
 			centerColumn += p.y;
+			centV += positionValue[p.x][p.y];
+			minX = Math.min(minX, p.x);
+			minY = Math.min(minY, p.y);
+			maxX = Math.max(maxX, p.x);
+			maxY = Math.max(maxY, p.y);
 		}
 		
 		centerRow /= pawns.size();
@@ -81,10 +106,14 @@ public class Bot
 			diffX = Math.abs(p.x - centerRow);
 			diffY = Math.abs(p.y - centerColumn);
 			
-			distanceSum += diffX >= diffY ? diffX : diffY;
+			comV += diffX >= diffY ? diffX : diffY;
 		}
 		
-		return 1/(float)(distanceSum - minMoves[pawns.size()]);
+		centV = centV/(float)maxPosValue[pawns.size()];
+		comV = 1/(float)(comV - minMoves[pawns.size()]);
+		uniV = (float)(pawns.size())/(float)((maxX - minX + 1)*(maxY - minY + 1));
+		
+		return comW*comV + centW*centV + uniW*uniV;
 	}
 	
 	public void makeMove()
