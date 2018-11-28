@@ -1,13 +1,19 @@
-package application;
+package main.java.ui;
 
 import java.awt.Point;
 import java.util.ArrayList;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.util.Pair;
+import main.java.ai.BoardManager;
+import main.java.ai.Bot;
+import main.java.ai.MoveListener;
+import main.java.ai.Status;
 
 //Kontroluje okienko gry
 public class LoAController
@@ -21,17 +27,28 @@ public class LoAController
 	private Field selectedField; // obecnie wybrane pole, jesli zadno nie jest wybrane to null
 	private Status currentPlayer, waitingPlayer;
 	private ArrayList<Point> redPawns, blackPawns;
-	private Bot bot;
+	private Bot redBot, blackBot;
 	
 	@FXML private void initialize()
-	{	
+	{
+	    //askUserForSettings();
 		initFields();
 		initPawns();
 		selectedField = null;
 		currentPlayer = Status.BLACK; // czarny zaczyna
 		waitingPlayer = Status.RED;
-		bot = new Bot(BoardManager.fieldsToStatus(fields), this); // Stworzenie bota, podajemu mu ten controller oraz plansze gry skonwertowana na prostsza postac
+
+        ControllerMoveListener listener = new ControllerMoveListener();
+		redBot = new Bot(listener, Status.RED, 6); // Stworzenie bota, podajemu mu ten controller oraz plansze gry skonwertowana na prostsza postac
+		blackBot = new Bot(listener, Status.BLACK, 6);
+		
+		runBlackBotMoveThread();
 	}
+
+	private void askUserForSettings()
+    {
+       // new OpeningDialog().showAndWait();
+    }
 	
 	//inicjalizacja planszy
 	private void initFields()
@@ -46,8 +63,8 @@ public class LoAController
 	//inicjaliza pionków
 	private void initPawns()
 	{
-		redPawns = new ArrayList<Point>();
-		blackPawns = new ArrayList<Point>();
+		redPawns = new ArrayList<>();
+		blackPawns = new ArrayList<>();
 		
 		for(int i = 1 ; i < 7 ; ++i) 
 		{
@@ -92,10 +109,10 @@ public class LoAController
 		ArrayList<Point> pawns = currentPlayer == Status.RED ? redPawns : blackPawns;
 		
 		//szukamy pionka który wlasnie sie ruszyl a nastepnie zmieniamy jego wspolrzedne na nowe
-		for(int i = 0 ; i < pawns.size() ; ++i) 
-			if(pawns.get(i).x == selectedField.getRow() && pawns.get(i).y == selectedField.getColumn()) 
+		for(Point p : pawns)
+			if(p.x == selectedField.getRow() && p.y == selectedField.getColumn())
 			{
-				pawns.get(i).move(row, column);//zmienie wspolrzednych na nowe
+				p.move(row, column);//zmienie wspolrzednych na nowe
 				break;
 			}
 		
@@ -113,26 +130,25 @@ public class LoAController
 		waitingPlayer = currentPlayer;
 		currentPlayer = currentPlayer == Status.RED ? Status.BLACK : Status.RED;
 		
-		if(currentPlayer == Status.BLACK)
-			label.setText("Your Turn (" + currentPlayer + ")");
-		else
-			label.setText("Computer Turn (" + currentPlayer + ")");
+		label.setText("Current Turn: " + currentPlayer);
 	}
 	
 	// skonczenie gry, jezeli
 	// arg = true to gracz wygral normalna metoda(utworzenie grupy pionkow)
 	// arg = false to gracz wygral poprzez to ze przeciwny gracz nie mial mozliwych ruchów
-	private void endGame(boolean isNormalVictory)
+	private void endGame(boolean isNormalVictory, Status whoWon)
 	{
-		label.setText(currentPlayer + " has Won!");
+	   Status whoLost = whoWon == Status.RED ? Status.BLACK : Status.RED;
+
+		label.setText(whoWon + " has Won!");
 		Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setTitle("Game has ended");
-		alert.setHeaderText(currentPlayer + " has Won!");
+		alert.setHeaderText(whoWon + " has Won!");
 		
 		if(isNormalVictory)
-			alert.setContentText(currentPlayer + " formed a group with his pawns!");
+			alert.setContentText(whoWon + " formed a group with his pawns!");
 		else 
-			alert.setContentText(waitingPlayer + " has no moves!");
+			alert.setContentText(whoLost + " has no moves!");
 		
 		alert.showAndWait();
 		System.exit(0);
@@ -150,19 +166,18 @@ public class LoAController
 	}
 	
 	//uruchomienie wątku odpowiadającego za ruch bota
-	private void runBotMoveThread()
+	private void runRedBotMoveThread()
 	{
-		new Thread(new Runnable()
-		{
-			public void run()
-			{
-				bot.makeMove();
-			}
-		}).start();
+		new Thread(() -> redBot.makeMove()).start();
+	}
+	
+	private void runBlackBotMoveThread()
+	{
+		new Thread(() -> blackBot.makeMove()).start();
 	}
 	
 	// Funkcja wywolywana za kazdym razem jak zostalo klikniete pole
-	public void buttonClicked(int row, int column) 
+    void buttonClicked(int row, int column)
 	{
 		//wybranie swojego pionka
 		if(selectedField == null && fields[row][column].getStatus() == currentPlayer)
@@ -180,16 +195,20 @@ public class LoAController
 			// przesuwamy wybranego pionka w docelowe miejsce
 			moveSelected(row, column); 
 			
-			// przekazujemy botowi informacje o ruchu jaki wykonal gracz
-			bot.moveMade(new Point(selectedField.getRow(), selectedField.getColumn()), new Point(row, column), currentPlayer);
-			
 			// sprawdzamy czy po wykonanym ruchu nie spelnione zostaly warunki zwyciestwa
 			if(BoardManager.checkWin(fields, currentPlayer == Status.BLACK ? blackPawns : redPawns, currentPlayer))
-				endGame(true);
-			
+				endGame(true, currentPlayer);
+			else if(BoardManager.checkWin(fields, waitingPlayer == Status.BLACK ? blackPawns : redPawns, waitingPlayer))
+                endGame(true, waitingPlayer);
+
+						
 			// sprawdzamy czy przecinwik ma mozliwy ruch
 			if(!enemyHasMoves())
-				endGame(false);
+				endGame(false, currentPlayer);
+			
+			// przekazujemy botowi informacje o ruchu jaki wykonal gracz
+			redBot.moveMade(new Point(selectedField.getRow(), selectedField.getColumn()), new Point(row, column), currentPlayer);
+			blackBot.moveMade(new Point(selectedField.getRow(), selectedField.getColumn()), new Point(row, column), currentPlayer);
 			
 			changePlayer();
 		}
@@ -198,11 +217,27 @@ public class LoAController
 		selectedField = null;
 		
 		if(currentPlayer == Status.RED)
-			runBotMoveThread();
+			runRedBotMoveThread();
+		else
+			runBlackBotMoveThread();
 	}
 	
 	public Status getCurrentPlayer()
 	{
 		return currentPlayer;
+	}
+	
+	public class ControllerMoveListener implements MoveListener
+	{
+		@Override
+		public void moveReceived(Pair<Point, Point> move, Status colour)
+		{
+			System.out.println(colour + " bot move received");
+            System.out.println("FROM:("+move.getKey().x+","+move.getKey().y+") " +
+                               "TO:("+move.getValue().x+"," + move.getValue().y+")\n");
+
+			buttonClicked(move.getKey().x, move.getKey().y);
+			Platform.runLater(() -> buttonClicked(move.getValue().x, move.getValue().y));
+		}
 	}
 }

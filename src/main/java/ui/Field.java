@@ -1,9 +1,10 @@
-package application;
+package main.java.ui;
 
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import main.java.ai.Status;
 
 // reprezentacja pola na planszy okienka gry NIE BOTA!!
 public class Field 
@@ -14,7 +15,7 @@ public class Field
 	private Type type;	   // CLEAR- pole czyste, MOVE- pole na ktore mozna sie ruszyc, SELECTED- pole akutalnie wybrane
 	private LoAController loAController;
 	
-	public Field(int row, int column, GridPane grid, LoAController loAController)
+	Field(int row, int column, GridPane grid, LoAController loAController)
 	{
 		this.row = row;
 		this.column = column;
@@ -32,17 +33,17 @@ public class Field
 	private void buttonClicked() 
 	{
 		// jezeli jest tura bota, to nie pozwalamy graczowi klikać pól
-		if(loAController.getCurrentPlayer() == Status.BLACK)
-			loAController.buttonClicked(row, column);
+
+		loAController.buttonClicked(row, column);
 	}
 	
-	public void setStatus(Status status)
+	void setStatus(Status status)
 	{
 		this.status = status;
 		drawPawn(); // przy zmiane statusu rysujemy na polu pionka lub usuwamy z niego pionka
 	}
 	
-	public void setType(Type type) 
+	void setType(Type type)
 	{
 		this.type = type;
 		drawType(); // przu zmianie typu zmieniamy kolor pola
@@ -75,17 +76,17 @@ public class Field
 		return status;
 	}
 	
-	public Type getType() 
+	Type getType()
 	{
 		return type;
 	}
 	
-	public int getRow() 
+	int getRow()
 	{
 		return row;
 	}
 	
-	public int getColumn() 
+	int getColumn()
 	{
 		return column;
 	}

@@ -1,4 +1,6 @@
-package application;
+package main.java.ai;
+
+import main.java.ui.Field;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -11,12 +13,14 @@ public class BoardManager
 	// Field[][] -> Status[][]
 	public static Status[][] fieldsToStatus(Field[][] fields)
 	{
-		Status output[][] = new Status[8][8];
+        //obliczenie rozmiaru planszu
+		int size = fields.length;
+		Status output[][] = new Status[size][size];
 		
-		for(int row = 0 ; row < 8 ; ++row)
-			for(int column = 0 ; column < 8 ; ++column)
+		for(int row = 0 ; row < size ; ++row)
+			for(int column = 0 ; column < size ; ++column)
 				output[row][column] = fields[row][column].getStatus();
-		
+
 		return output;
 	}
 	
@@ -27,31 +31,34 @@ public class BoardManager
 	}
 
 	// metoda wywolana przez bota
-	public static ArrayList<Point> getMoves(Status[][] board, int row, int column, Status currentPlayer) 
+	static ArrayList<Point> getMoves(Status[][] board, int row, int column, Status currentPlayer)
 	{
-		ArrayList<Point> possibleMove = new ArrayList<Point>();
+	    //obliczenie rozmiaru planszu
+		int size = board.length;
+
+		ArrayList<Point> possibleMove = new ArrayList<>();
 		// pobranie zasiegu ruchu w konkretnych kierunkach
 		// 0-Prawo, 1-Lewo, 2-Gora, 3-Dol, 4-GoraPrawo, 5-DolLewo, 6-GoraLewo, 7-DolPrawo
-		int range[] = getRange(board, row, column, currentPlayer);
+		int range[] = getRange(board, row, column, currentPlayer, size);
 			
 		// sprwadzenie czy nie wychodzimy danym ruchem za plaszne, jesli nie to dodajemy go do mozliwych ruchow
 		// drugi warunek w ifach to sprawdzenie czy nie skaczemy swoim pionkiem na swojego
-		if((column + range[0] <= 7) && (board[row][column] != board[row][column + range[0]]))
+		if((column + range[0] < size) && (board[row][column] != board[row][column + range[0]]))
 			possibleMove.add(new Point(row, column + range[0]));
 		if((column - range[1] >= 0) && (board[row][column] != board[row][column - range[1]]))
 			possibleMove.add(new Point(row, column - range[1]));
 		
-		if((row + range[2] <= 7) && (board[row][column] != board[row + range[2]][column]))
+		if((row + range[2] < size) && (board[row][column] != board[row + range[2]][column]))
 			possibleMove.add(new Point(row + range[2], column));
 		if((row - range[3] >= 0) && (board[row][column] != board[row - range[3]][column]))
 			possibleMove.add(new Point(row - range[3], column));
 		
-		if((column + range[4] <= 7 && row + range[4] <= 7) && (board[row][column] != board[row + range[4]][column + range[4]]))
+		if((column + range[4] < size && row + range[4] <= 7) && (board[row][column] != board[row + range[4]][column + range[4]]))
 			possibleMove.add(new Point(row + range[4], column + range[4]));
 		if((column - range[5] >= 0 && row - range[5] >= 0) && (board[row][column] != board[row - range[5]][column - range[5]]))
 			possibleMove.add(new Point(row - range[5], column - range[5]));
 		
-		if((row + range[6] <= 7 && column - range[6] >= 0) && (board[row][column] != board[row + range[6]][column - range[6]]))
+		if((row + range[6] < size && column - range[6] >= 0) && (board[row][column] != board[row + range[6]][column - range[6]]))
 			possibleMove.add(new Point(row + range[6], column - range[6]));
 		if((row - range[7] >= 0 && column + range[7] <= 7) && (board[row][column] != board[row - range[7]][column + range[7]]))
 			possibleMove.add(new Point(row - range[7], column + range[7]));
@@ -59,7 +66,7 @@ public class BoardManager
 		return possibleMove;
 	}
 	
-	private static int[] getRange(Status board[][], int row, int column, Status currentPlayer)
+	private static int[] getRange(Status board[][], int row, int column, Status currentPlayer, int size)
 	{
 		Status enemy = currentPlayer == Status.BLACK ? Status.RED : Status.BLACK;
 		
@@ -67,10 +74,10 @@ public class BoardManager
 		
 		// tablica zasiegow teoretycznie zasieg w gore i w dol jest taki sam,ale
 		// mozliwe jest ze np. ruch w dol jest blokowany przez przeciwny pionek
-		int range[] = new int[8];
+		int range[] = new int[size];
 		
 		// pozycja najblizszego przeciwnego pionak w danym kierunku
-		int enemyPawn[] = new int[8];
+		int enemyPawn[] = new int[size];
 		
 		Arrays.fill(range, 1);       // 1 na start bo pionek dla ktorego liczymy ruchy zapewnia 1 mozliwy ruch w kazda strone
 		Arrays.fill(enemyPawn, 100); // 100 = nieskonczonosc
@@ -79,7 +86,7 @@ public class BoardManager
 	// drugi warunek w kazdej petli oblicza pozycja najblizszego przeciwnego pionka w danym kierunku
 		
 		// W PRAWO
-		for(int i = 1 ; column + i < 8 ; ++i)
+		for(int i = 1 ; column + i < size ; ++i)
 		{
 			if(board[row][column + i] != Status.EMPTY) range[0]++;
 			if(board[row][column + i] == enemy && enemyPawn[0] == 100) enemyPawn[0] = i;
@@ -93,7 +100,7 @@ public class BoardManager
 		}
 		
 		// W GORE
-		for(int i = 1 ; row + i < 8 ; ++i)
+		for(int i = 1 ; row + i < size ; ++i)
 		{
 			if(board[row + i][column] != Status.EMPTY) range[2]++;
 			if(board[row + i][column] == enemy && enemyPawn[2] == 100) enemyPawn[2] = i;
@@ -107,7 +114,7 @@ public class BoardManager
 		}
 		
 		// GORA PRAWO
-		for(int i = 1; row + i < 8 && column + i < 8 ; ++i)
+		for(int i = 1; row + i < size && column + i < size ; ++i)
 		{
 			if(board[row + i][column + i] != Status.EMPTY) range[4]++;
 			if(board[row + i][column + i] == enemy && enemyPawn[4] == 100) enemyPawn[4] = i;
@@ -121,14 +128,14 @@ public class BoardManager
 		}
 		
 		// GORA LEWO
-		for(int i = 1; row + i < 8 && column - i >= 0 ; ++i)
+		for(int i = 1; row + i < size && column - i >= 0 ; ++i)
 		{
 			if(board[row + i][column - i] != Status.EMPTY) range[6]++;
 			if(board[row + i][column - i] == enemy && enemyPawn[6] == 100) enemyPawn[6] = i;
 		}
 
 		// DOL PRAWO
-		for(int i = 1; row - i >= 0 && column + i < 8; ++i)
+		for(int i = 1; row - i >= 0 && column + i < size; ++i)
 		{
 			if(board[row - i][column + i] != Status.EMPTY) range[6]++;
 			if(board[row - i][column + i] == enemy && enemyPawn[7] == 100) enemyPawn[7] = i;
@@ -152,9 +159,10 @@ public class BoardManager
 	// metoda wywolywana przez bota
 	// sprawdzamy czy spelnione zostaly warunki zwyciestwa
 	// przeszukiwanie wszerz
-	public static boolean checkWin(Status[][] board, ArrayList<Point> pawns, Status currentPlayer)
+	static boolean checkWin(Status[][] board, ArrayList<Point> pawns, Status currentPlayer)
 	{
-		ArrayList<Point> connected = new ArrayList<Point>();  
+	    int size = board.length;
+		ArrayList<Point> connected = new ArrayList<>();
 		
 		//dodajemy jednego pionka do tablicy stanow polaczonych
 		connected.add(pawns.get(0));
@@ -167,7 +175,7 @@ public class BoardManager
 			
 			for(int j = -1 ; j < 2 ; ++j)
 				for(int k = -1; k < 2 ; ++k)
-					if(row + j >= 0 && row + j < 8 && column + k >= 0 && column + k < 8 // unikamy wyjscia za plansze
+					if(row + j >= 0 && row + j < size && column + k >= 0 && column + k < size // unikamy wyjscia za plansze
 					&& board[row + j][column + k] == currentPlayer		   // dodajemy sąsiadów tylko o tym samym kolorze
 					&& !connected.contains(new Point(row + j, column +k))) // unikamy duplikacji
 					    	connected.add(new Point(row + j, column + k));
