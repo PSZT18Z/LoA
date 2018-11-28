@@ -2,6 +2,7 @@ package main.java.ui;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -31,7 +32,7 @@ public class LoAController
 	
 	@FXML private void initialize()
 	{
-	    //askUserForSettings();
+	    initSettings();
 		initFields();
 		initPawns();
 		selectedField = null;
@@ -45,10 +46,18 @@ public class LoAController
 		runBlackBotMoveThread();
 	}
 
-	private void askUserForSettings()
+	private void initSettings()
     {
-       // new OpeningDialog().showAndWait();
+       getSettingsFromUser();
     }
+	
+	private Pair<Integer, Integer> getSettingsFromUser()
+	{
+		Optional<Pair<Integer, Integer>> result = new OpeningDialog().showAndWait();
+		if(!result.isPresent()) System.exit(0);
+		
+		return result.get();
+	}
 	
 	//inicjalizacja planszy
 	private void initFields()
