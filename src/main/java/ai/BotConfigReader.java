@@ -25,7 +25,6 @@ public class BotConfigReader
         else
             throw new FileNotFoundException("bot config file: " + configFileName + " not found");
 
-
         //czytamy wartosci a nastepnie zamieniamy je na odpowiednie typy
         float comW = Float.valueOf(prop.getProperty("centerOfMassWeight"));   // czytamy wage srodka masy
         float uniW = Float.valueOf(prop.getProperty("unityWeight"));          // czytamy wage jednosci
@@ -33,19 +32,19 @@ public class BotConfigReader
         int size = Integer.valueOf(prop.getProperty("size"));                 // czytamy rozmiar
 
         // tablice intow zwracane sa jako jedne string z intami oddzielonymi przecinkami
-        String minMovesString = prop.getProperty("minMoves");
+        String minDistanceSumString = prop.getProperty("minDistanceSum");
         String maxPosValueString = prop.getProperty("maxPosValue");
         String[] rows = new String[size];
         for(int i = 0 ; i<size ; ++i) rows[i] = prop.getProperty("row"+i);
 
         // zamieniami tablice stringow na tablice intow
-        int minMoves[] = parseStringToIntArray(minMovesString);
+        int minDistanceSum[] = parseStringToIntArray(minDistanceSumString);
         int maxPosValue[] = parseStringToIntArray(maxPosValueString);
         int positionValue[][] = parsePositionValues(rows);
 
 
 
-        return new BotConfig(minMoves, positionValue, maxPosValue, comW, uniW, centW, size);
+        return new BotConfig(minDistanceSum, positionValue, maxPosValue, comW, uniW, centW, size);
     }
 
     // zamieniamy tablice stringow w ktorej kazdy string to inty oddzielone przecinkami

@@ -33,8 +33,8 @@ public class Field
 	private void buttonClicked() 
 	{
 		// jezeli jest tura bota, to nie pozwalamy graczowi klikać pól
-
-		loAController.buttonClicked(row, column);
+		if(loAController.isHumanTurn())
+			loAController.buttonClicked(row, column);
 	}
 	
 	void setStatus(Status status)

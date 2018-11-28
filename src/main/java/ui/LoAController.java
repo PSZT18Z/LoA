@@ -24,6 +24,8 @@ public class LoAController
 	@FXML
 	Label label;
 	
+	private enum Player{HUMAN, AI};
+	Player blackPlayer, redPlayer;
 	private Field fields[][]; // plansza gry
 	private Field selectedField; // obecnie wybrane pole, jesli zadno nie jest wybrane to null
 	private Status currentPlayer, waitingPlayer;
@@ -39,18 +41,32 @@ public class LoAController
 		currentPlayer = Status.BLACK; // czarny zaczyna
 		waitingPlayer = Status.RED;
 
-        ControllerMoveListener listener = new ControllerMoveListener();
-		redBot = new Bot(listener, Status.RED, 6); // Stworzenie bota, podajemu mu ten controller oraz plansze gry skonwertowana na prostsza postac
-		blackBot = new Bot(listener, Status.BLACK, 6);
-		
-		runBlackBotMoveThread();
+		if(blackPlayer == Player.AI)
+			runBotMoveThread(Status.BLACK);
 	}
 
+	// ustawiamy czy gracz bedzie botem(o jakiej glebokosci drzewa) czy czlowiekiem
 	private void initSettings()
     {
-       getSettingsFromUser();
+       Pair<Integer, Integer> settings = getSettingsFromUser();
+       ControllerMoveListener listener = new ControllerMoveListener();
+       
+       if(settings.getKey() == 0) redPlayer = Player.HUMAN;
+       else
+       {
+    	   redPlayer = Player.AI;
+    	   redBot = new Bot(listener, Status.RED, settings.getKey()); // Stworzenie bota podajemy mu naszego listenera
+       }															  // oraz okreslamy kolor i poziom trudnosci bota
+       
+       if(settings.getValue() == 0) blackPlayer = Player.HUMAN;
+       else
+       {
+    	   blackPlayer = Player.AI;
+    	   blackBot = new Bot(listener, Status.BLACK, settings.getValue());
+       }
     }
 	
+	// Wyswietlamy opcje wyboru opcji uzytownikowi
 	private Pair<Integer, Integer> getSettingsFromUser()
 	{
 		Optional<Pair<Integer, Integer>> result = new OpeningDialog().showAndWait();
@@ -147,7 +163,8 @@ public class LoAController
 	// arg = false to gracz wygral poprzez to ze przeciwny gracz nie mial mozliwych ruchów
 	private void endGame(boolean isNormalVictory, Status whoWon)
 	{
-	   Status whoLost = whoWon == Status.RED ? Status.BLACK : Status.RED;
+		clearBoard();
+	    Status whoLost = whoWon == Status.RED ? Status.BLACK : Status.RED;
 
 		label.setText(whoWon + " has Won!");
 		Alert alert = new Alert(AlertType.INFORMATION);
@@ -175,15 +192,14 @@ public class LoAController
 	}
 	
 	//uruchomienie wątku odpowiadającego za ruch bota
-	private void runRedBotMoveThread()
+	private void runBotMoveThread(Status colour)
 	{
-		new Thread(() -> redBot.makeMove()).start();
+		if(colour == Status.RED)
+			new Thread(() -> redBot.makeMove()).start();
+		else
+			new Thread(() -> blackBot.makeMove()).start();
 	}
 	
-	private void runBlackBotMoveThread()
-	{
-		new Thread(() -> blackBot.makeMove()).start();
-	}
 	
 	// Funkcja wywolywana za kazdym razem jak zostalo klikniete pole
     void buttonClicked(int row, int column)
@@ -216,8 +232,11 @@ public class LoAController
 				endGame(false, currentPlayer);
 			
 			// przekazujemy botowi informacje o ruchu jaki wykonal gracz
-			redBot.moveMade(new Point(selectedField.getRow(), selectedField.getColumn()), new Point(row, column), currentPlayer);
-			blackBot.moveMade(new Point(selectedField.getRow(), selectedField.getColumn()), new Point(row, column), currentPlayer);
+			if(redPlayer == Player.AI)
+				redBot.moveMade(new Point(selectedField.getRow(), selectedField.getColumn()), new Point(row, column), currentPlayer);
+			
+			if(blackPlayer == Player.AI)
+				blackBot.moveMade(new Point(selectedField.getRow(), selectedField.getColumn()), new Point(row, column), currentPlayer);
 			
 			changePlayer();
 		}
@@ -225,15 +244,16 @@ public class LoAController
 		clearBoard();
 		selectedField = null;
 		
-		if(currentPlayer == Status.RED)
-			runRedBotMoveThread();
-		else
-			runBlackBotMoveThread();
+		if(currentPlayer == Status.RED && redPlayer == Player.AI)
+			runBotMoveThread(Status.RED);
+		else if(currentPlayer == Status.BLACK && blackPlayer == Player.AI)
+			runBotMoveThread(Status.BLACK);
 	}
 	
-	public Status getCurrentPlayer()
+	public boolean isHumanTurn()
 	{
-		return currentPlayer;
+		return (currentPlayer == Status.RED && redPlayer == Player.HUMAN)
+			   || (currentPlayer == Status.BLACK && blackPlayer == Player.HUMAN);
 	}
 	
 	public class ControllerMoveListener implements MoveListener
@@ -244,7 +264,7 @@ public class LoAController
 			System.out.println(colour + " bot move received");
             System.out.println("FROM:("+move.getKey().x+","+move.getKey().y+") " +
                                "TO:("+move.getValue().x+"," + move.getValue().y+")\n");
-
+            	
 			buttonClicked(move.getKey().x, move.getKey().y);
 			Platform.runLater(() -> buttonClicked(move.getValue().x, move.getValue().y));
 		}

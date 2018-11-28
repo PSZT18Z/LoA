@@ -7,6 +7,11 @@ import javafx.util.Pair;
 
 import java.util.Optional;
 
+// Dialog wyboru opcji
+// pierwszy element pary- gracz czerwony
+// drugi element pary - gracz czarny
+// jezeli element == 0 to gracz jest czlowiekiem
+// jezeli element >=1 to gracz jest botem o glebokosci drzewa = elementowi
 public class OpeningDialog
 {
 	ButtonType doneButton;

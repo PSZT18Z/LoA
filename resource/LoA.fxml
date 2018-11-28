@@ -31,7 +31,7 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
       </GridPane>
-      <Label fx:id="label" alignment="CENTER" prefHeight="139.0" prefWidth="640.0" text="Your Turn (BLACK)">
+      <Label fx:id="label" alignment="CENTER" prefHeight="139.0" prefWidth="640.0" text="Current Turn: BLACK">
          <font>
             <Font name="Karumbi" size="77.0" />
          </font>
