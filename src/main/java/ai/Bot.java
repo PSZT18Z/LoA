@@ -139,14 +139,13 @@ public class Bot
 		// dodajemy 1 ponieważ juz sam pojedynczy pionek tworzy prostokat o polu 1
 		// dzielimy najmniejszy mozliwy prostokat dla danej ilosic pionkow(czyli ilosc pionkow) przez otrzymany z naszych obliczen prostokat
 		uniV = (float)(pawns.size())/(float)((stats.maxX - stats.minX + 1)*(stats.maxY - stats.minY + 1));
-		
+
 		return comW*comV + centW*centV + uniW*uniV;
 	}
 	
 	// alg obliczjacy optymalny ruch
 	private float alphaBeta(Status board[][], ArrayList<Point> movingPawns, ArrayList<Point> waitingPawns, Status movingPlayer, int depth, float alpha, float beta)
 	{
-		
 		if(depth <= 0 || BoardManager.checkWin(board, movingPawns, movingPlayer))
 			return h(movingPlayer == myColour ? movingPawns : waitingPawns);
 		
