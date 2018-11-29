@@ -1,4 +1,4 @@
-package main.java.ui;
+package ui;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -11,10 +11,10 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.util.Pair;
-import main.java.ai.BoardManager;
-import main.java.ai.Bot;
-import main.java.ai.MoveListener;
-import main.java.ai.Status;
+import ai.BoardManager;
+import ai.Bot;
+import ai.MoveListener;
+import ai.Status;
 
 //Kontroluje okienko gry
 public class LoAController

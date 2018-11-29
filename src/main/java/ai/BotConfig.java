@@ -1,4 +1,4 @@
-package main.java.ai;
+package ai;
 
 public class BotConfig
 {

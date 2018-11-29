@@ -1,6 +1,6 @@
-package main.java.ai;
+package ai;
 
-import main.java.ui.Field;
+import ui.Field;
 
 import java.awt.Point;
 import java.util.ArrayList;

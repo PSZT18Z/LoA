@@ -1,4 +1,4 @@
-package main.java.ai;
+package ai;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

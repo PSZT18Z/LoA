@@ -1,10 +1,10 @@
-package main.java.ui;
+package ui;
 
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import main.java.ai.Status;
+import ai.Status;
 
 // reprezentacja pola na planszy okienka gry NIE BOTA!!
 public class Field 

@@ -1,4 +1,4 @@
-package main.java.ai;
+package ai;
 
 import java.awt.Point;
 import java.util.ArrayList;
