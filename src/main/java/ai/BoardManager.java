@@ -66,7 +66,7 @@ public class BoardManager
 		return possibleMove;
 	}
 	
-	private static int[] getRange(Status board[][], int row, int column, Status currentPlayer, int size)
+	static int[] getRange(Status board[][], int row, int column, Status currentPlayer, int size)
 	{
 		Status enemy = currentPlayer == Status.BLACK ? Status.RED : Status.BLACK;
 		

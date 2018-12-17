@@ -67,7 +67,7 @@ public class Bot
 	}
 	
 	// metoda akutalizajaca plansze oraz pionki(otrzymane w arg) na podstawie wykonanego ruchu
-	private void moveMade(Status board[][], ArrayList<Point> moveMakerPawns, ArrayList<Point> oppositePawns, Point startPoint, Point endPoint, Status moveMaker)
+	public static void moveMade(Status board[][], ArrayList<Point> moveMakerPawns, ArrayList<Point> oppositePawns, Point startPoint, Point endPoint, Status moveMaker)
 	{
 		Status oppositePlayer = moveMaker == Status.RED ? Status.BLACK : Status.RED;
 		

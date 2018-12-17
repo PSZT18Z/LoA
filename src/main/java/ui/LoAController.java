@@ -256,6 +256,7 @@ public class LoAController
 			   || (currentPlayer == Status.BLACK && blackPlayer == Player.HUMAN);
 	}
 	
+	
 	public class ControllerMoveListener implements MoveListener
 	{
 		@Override
@@ -269,4 +270,6 @@ public class LoAController
 			Platform.runLater(() -> buttonClicked(move.getValue().x, move.getValue().y));
 		}
 	}
+	
+
 }
