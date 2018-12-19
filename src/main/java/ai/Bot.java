@@ -123,12 +123,13 @@ public class Bot
     }
 	
 	// funkcja heurystyczna obliczająca jak dobre jest danie usawienie planszy dla bota
-	private float h(ArrayList<Point> pawns)
+	float  h(ArrayList<Point> pawns)
 	{
+		
 		float comV, centV, uniV;
 		
 		HeuristicStatisticCounter stats = new HeuristicStatisticCounter(pawns, positionValue);
-		
+	
 		// dzielimy sume wartosci wszystkich pozycji pionek przez maksymalna sume wartosci mozliwa do uzyskania dla takiej ilosci pionkow
 		centV = (float)stats.positionValueSum/(float)maxPosValue[pawns.size()];
 		// im mniejsza suma odlglosc od srodka masy tym lepiej dlatego odwracamy wartosc sumy odleglosci ()^-1
@@ -139,7 +140,14 @@ public class Bot
 		// dodajemy 1 ponieważ juz sam pojedynczy pionek tworzy prostokat o polu 1
 		// dzielimy najmniejszy mozliwy prostokat dla danej ilosic pionkow(czyli ilosc pionkow) przez otrzymany z naszych obliczen prostokat
 		uniV = (float)(pawns.size())/(float)((stats.maxX - stats.minX + 1)*(stats.maxY - stats.minY + 1));
-
+		/*System.out.println((float)stats.positionValueSum);
+		System.out.println((float)maxPosValue[pawns.size()]);
+		System.out.println((float)(stats.distanceSum - minDistanceSum[pawns.size()]));
+		System.out.println((float)(pawns.size()));
+		System.out.println((float)((stats.maxX - stats.minX + 1)*(stats.maxY - stats.minY + 1)));*/
+		/*System.out.println(centV);
+		System.out.println(comV);
+		System.out.println(uniV);*/
 		return comW*comV + centW*centV + uniW*uniV;
 	}
 	

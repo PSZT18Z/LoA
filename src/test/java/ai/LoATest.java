@@ -159,10 +159,10 @@ class LoATest {
 		ArrayList<Point> x = BoardManager.getMoves(board, 7, 1, Status.RED);
 		assertEquals(x, possibleMoves);	//porównanie wyliczonych mo¿liwych do ruchu pól ze zwróconymi przez funkcjê getMoves
 	}
-	
+
+	//test funkcji ustalajacej statystki danego ukladu
 	@Test
-	void testHeuristic() {
-			
+	void testHeuristicStatisticCounter () {
 		BotConfig myConfig = null;
         try
         {
@@ -172,7 +172,36 @@ class LoATest {
         {
             e.printStackTrace();
         }
-                  
+		createBoard(board);
+		HeuristicStatisticCounter  counter = new HeuristicStatisticCounter(moveMakerPawns, myConfig.positionValue);
+		//porownanie oczekiwanych wartosci statystyk z wyliczonymi przez konstruktor HeuristicStatisticCounter
+		assertTrue(counter.maxX==7);
+		assertTrue(counter.maxY==6);
+		assertTrue(counter.minX==1);
+		assertTrue(counter.minY==0);
+		assertTrue(counter.distanceSum==22);
+		assertTrue(counter.positionValueSum==6);
+		  
 	}
-
+	//test funkcji heurystycznej
+	@Test
+	void testHeuristic() {
+		createBoard(board);
+		MoveListener listener = null;
+		Bot bot = new Bot(listener, Status.RED, 6);
+		BotConfig myConfig = null;
+        try
+        {
+            myConfig = BotConfigReader.readBotConfig(Status.RED);
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
+        double result = myConfig.centW*0.42857143+myConfig.comW*0.083333336+myConfig.uniW*0.20408164;
+        
+        assertTrue(Math.abs(bot.h(moveMakerPawns)-result) < 0.000001);	//sprawdzanie co do dok³adnoœci 0.000001 wyniku dzia³ania funkcji heurystycznej (ze wzglêdu na dzielenie)
+       
+	}
+		
 }
