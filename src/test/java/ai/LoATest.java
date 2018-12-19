@@ -2,6 +2,7 @@ package ai;
 
 import static org.junit.jupiter.api.Assertions.*;
 import java.awt.Point;
+import java.io.IOException;
 import java.util.ArrayList;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -50,18 +51,19 @@ class LoATest {
 		System.out.println("End");
 	}
 	
+	//test funkcji sprawdzaj¹cej warunki zwyciestwa w razie braku stowrzenia jednej grupy
 	@Test
 	void testNotWinRed() {
 		createBoard(board);
-		assertFalse(BoardManager.checkWin(board, moveMakerPawns, Status.RED ));
+		assertFalse(BoardManager.checkWin(board, moveMakerPawns, Status.RED ));	//brak spe³nienia warunków zwyciestwa dla gracza RED, funkcja powinna zwrociæ false
 	}
-	
+	//test funkcji sprawdzaj¹cej warunki zwyciestwa w razie braku stowrzenia jednej grupy
 	@Test
 	void testNotWinBlack() {
 		createBoard(board);
-		assertFalse(BoardManager.checkWin(board, oppositePawns, Status.BLACK ));
+		assertFalse(BoardManager.checkWin(board, oppositePawns, Status.BLACK ));	//brak spe³nienia warunków zwyciestwa dla gracza BLACK, funkcja powinna zwrociæ false
 	}
-	
+	//test funkcji checkWin w razie spe³niania warunków zwyciestwa
 	@Test
 	void testWin() {
 		Status[][] board = {	
@@ -75,10 +77,11 @@ class LoATest {
 				{e, e, e, b, e, e, e, e}
 				};
 		createBoard(board);
-		assertTrue(BoardManager.checkWin(board, moveMakerPawns, Status.RED ));
+		assertTrue(BoardManager.checkWin(board, moveMakerPawns, Status.RED ));	//gracz RED spe³nia warunki zwyciestwa, funkcja zwaraca true
 		
 	}
 	
+	//sprawdzanie warunku zwyciestwa przy jednym pionku
 	@Test
 	void testOnePawn() {
 		Status[][] board = {	
@@ -92,24 +95,24 @@ class LoATest {
 				{e, e, e, b, e, e, e, e}
 				};
 		createBoard(board);
-		assertTrue(BoardManager.checkWin(board, moveMakerPawns, Status.RED ));
+		assertTrue(BoardManager.checkWin(board, moveMakerPawns, Status.RED )); //gracz RED ma jeden pionek, funkcja zwyciestwa zwraca true
 		
 	}
-
+	//test wykonania ruchu bez bicia i przeskakiwania swojego pionka
 	@Test
 	void tesMove() {
 		createBoard(board);
 		Point startPoint = new Point(7,1);
 		Point endPoint = new Point(5,1);
 		
-		Bot.moveMade(board, moveMakerPawns, oppositePawns, startPoint , endPoint, Status.RED);
-		assertEquals(board[startPoint.x][startPoint.y],Status.EMPTY);
-		assertEquals(board[endPoint.x][endPoint.y], Status.RED);
-		assertTrue(moveMakerPawns.contains(endPoint));
-		assertFalse(moveMakerPawns.contains(startPoint));
+		Bot.moveMade(board, moveMakerPawns, oppositePawns, startPoint , endPoint, Status.RED); 
+		assertEquals(board[startPoint.x][startPoint.y],Status.EMPTY);	//pole z którego startujemy po skoku ma status EMPTY
+		assertEquals(board[endPoint.x][endPoint.y], Status.RED);		//pole na które skaczemy zmienia status na status gracza wykonuj¹cego ruch RED
+		assertTrue(moveMakerPawns.contains(endPoint));					//arraylist z  pionkami gracza RED zawiera pole na które skaczemy
+		assertFalse(moveMakerPawns.contains(startPoint));				//arraylist z  pionkami gracza RED nie zawierac pola z którego startowaliœmy
 	
 	}
-	
+	//test wykonania ruchu z biciem
 	@Test
 	void testBeating() {
 		createBoard(board);
@@ -118,14 +121,14 @@ class LoATest {
 		
 		Bot.moveMade(board, moveMakerPawns, oppositePawns, startPoint , endPoint, Status.RED);
 		
-		assertEquals(board[startPoint.x][startPoint.y],Status.EMPTY);
-		assertEquals(board[endPoint.x][endPoint.y], Status.RED);
-		assertTrue(moveMakerPawns.contains(endPoint));
-		assertFalse(moveMakerPawns.contains(startPoint));
-		assertFalse(oppositePawns.contains(endPoint));
+		assertEquals(board[startPoint.x][startPoint.y],Status.EMPTY);	//pole startu zmienia status na EMPTY
+		assertEquals(board[endPoint.x][endPoint.y], Status.RED);		//pole konca zmienia satus na status gracza wykonuj¹cego ruch RED
+		assertTrue(moveMakerPawns.contains(endPoint));					//arraylist z pionkami gracza RED musi zawieraæ pole na które skaczemy
+		assertFalse(moveMakerPawns.contains(startPoint));				//arraylist z pionkami gracza RED nie zawiera pola startu
+		assertFalse(oppositePawns.contains(endPoint));					//arraylist gracza BLACK nie zawiera pola na którym zbiliœmy jego pion
 	
 	}
-	
+	//test wykonania ruchu z przeskoczeniem swojego pionka
 	@Test
 	void testJumpOverPawns() {
 		createBoard(board);
@@ -133,19 +136,20 @@ class LoATest {
 		Point endPoint = new Point(5,0);
 		
 		Bot.moveMade(board, moveMakerPawns, oppositePawns, startPoint , endPoint, Status.RED);
-		assertEquals(board[startPoint.x][startPoint.y],Status.EMPTY);
-		assertEquals(board[endPoint.x][endPoint.y], Status.RED);
-		assertTrue(moveMakerPawns.contains(endPoint));
-		assertFalse(moveMakerPawns.contains(startPoint));
+		assertEquals(board[startPoint.x][startPoint.y],Status.EMPTY);	//pole startu zmienia status na EMPTY
+		assertEquals(board[endPoint.x][endPoint.y], Status.RED);		//pole konca zmienia satus na status gracza wykonuj¹cego ruch RED
+		assertTrue(moveMakerPawns.contains(endPoint));					//arraylist z pionkami gracza RED musi zawieraæ pole na które skaczemy
+		assertFalse(moveMakerPawns.contains(startPoint));				//arraylist z pionkami gracza RED nie zawiera pola startu
 	
 	}
-	
+	//test zakresu ruchu danego pionka
 	@Test
 	void testGetRange() {
 		int[] expRange = {2,2,3,3,0,5,2,2};
 		int[] range = BoardManager.getRange(board, 0, 1, Status.RED, 8);
-		assertArrayEquals(expRange, range);
+		assertArrayEquals(expRange, range);	//porównanie wyliczonego zakresu z zakresem zwróconym przez funkcjê getRange
 	}
+	//test mo¿liwych ruchów dla pionka
 	@Test
 	void testPossibleMoves() {
 		ArrayList<Point> possibleMoves = new ArrayList<Point>();
@@ -153,7 +157,22 @@ class LoATest {
 		possibleMoves.add(new Point(5, 1));
 		possibleMoves.add(new Point(6, 0));
 		ArrayList<Point> x = BoardManager.getMoves(board, 7, 1, Status.RED);
-		assertEquals(x, possibleMoves);
+		assertEquals(x, possibleMoves);	//porównanie wyliczonych mo¿liwych do ruchu pól ze zwróconymi przez funkcjê getMoves
+	}
+	
+	@Test
+	void testHeuristic() {
+			
+		BotConfig myConfig = null;
+        try
+        {
+            myConfig = BotConfigReader.readBotConfig(Status.RED);
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
+                  
 	}
 
 }

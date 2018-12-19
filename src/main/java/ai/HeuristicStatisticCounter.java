@@ -37,5 +37,9 @@ public class HeuristicStatisticCounter
 			
 			distanceSum += diffX >= diffY ? diffX : diffY;
 		}
+		
+		
+		
+		
 	}
 }
