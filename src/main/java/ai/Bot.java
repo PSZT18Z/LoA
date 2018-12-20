@@ -140,14 +140,7 @@ public class Bot
 		// dodajemy 1 ponieważ juz sam pojedynczy pionek tworzy prostokat o polu 1
 		// dzielimy najmniejszy mozliwy prostokat dla danej ilosic pionkow(czyli ilosc pionkow) przez otrzymany z naszych obliczen prostokat
 		uniV = (float)(pawns.size())/(float)((stats.maxX - stats.minX + 1)*(stats.maxY - stats.minY + 1));
-		/*System.out.println((float)stats.positionValueSum);
-		System.out.println((float)maxPosValue[pawns.size()]);
-		System.out.println((float)(stats.distanceSum - minDistanceSum[pawns.size()]));
-		System.out.println((float)(pawns.size()));
-		System.out.println((float)((stats.maxX - stats.minX + 1)*(stats.maxY - stats.minY + 1)));*/
-		/*System.out.println(centV);
-		System.out.println(comV);
-		System.out.println(uniV);*/
+		
 		return comW*comV + centW*centV + uniW*uniV;
 	}
 	
