@@ -184,7 +184,7 @@ class LoATest
         catch(IOException e)
         {
             e.printStackTrace();
-            fail("Exception");
+            fail("Exception reading Bot config");
         }
 		createBoard(board);
 		HeuristicStatisticCounter  counter = new HeuristicStatisticCounter(moveMakerPawns, myConfig.positionValue);
@@ -207,12 +207,12 @@ class LoATest
 		BotConfig myConfig = null;
         try
         {
-            myConfig = BotConfigReader.readBotConfig(Status.RED);
+            myConfig = BotConfigReader.readBotConfig(Stastus.RED);
         }
         catch(IOException e)
         {
             e.printStackTrace();
-            fail("Exception");
+            fail("Exception reading Bot config");
         }
        
         double result = myConfig.centW*(6.0/14.0)+myConfig.comW*(1.0/12.0)+myConfig.uniW*(10.0/49.0);    
