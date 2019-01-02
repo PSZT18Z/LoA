@@ -72,8 +72,8 @@ public class OpeningDialog
             redPlayer.getItems().add("AI("+i+")");
             blackPlayer.getItems().add("AI("+i+")");
         }
-        redPlayer.getSelectionModel().select(6);
-        blackPlayer.getSelectionModel().select(6);
+        redPlayer.getSelectionModel().select(0);
+        blackPlayer.getSelectionModel().select(0);
     }
     
     private void fillGridWithBoxesAndLabels()
