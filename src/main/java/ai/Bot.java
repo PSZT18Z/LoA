@@ -136,7 +136,7 @@ public class Bot
 		// od sumy odleglosci odejmujemy najmniejsza sume odleglosci mozliwa do uzaskania dla takiej ilosci pionkow
 		// bez tego bot preferowalby plansze z mniejsza iloscia pionkow
 		comV = 1/(float)(stats.distanceSum - minDistanceSum[pawns.size()]);
-		// liczymy pole prostokąta zawierającego wsyzstkie punkty, im większe tym lepiej
+		// liczymy pole prostokąta zawierającego wsyzstkie punkty, im mniejszez tym lepiej
 		// dodajemy 1 ponieważ juz sam pojedynczy pionek tworzy prostokat o polu 1
 		// dzielimy najmniejszy mozliwy prostokat dla danej ilosic pionkow(czyli ilosc pionkow) przez otrzymany z naszych obliczen prostokat
 		uniV = (float)(pawns.size())/(float)((stats.maxX - stats.minX + 1)*(stats.maxY - stats.minY + 1));

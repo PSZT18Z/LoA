@@ -33,8 +33,7 @@
       </GridPane>
       <Label fx:id="label" alignment="CENTER" prefHeight="139.0" prefWidth="640.0" text="Current Turn: BLACK">
          <font>
-            <Font name="Karumbi" size="77.0" />
-         </font>
-      </Label>
+            <Font name="System Bold" size="48.0" />
+         </font></Label>
    </children>
 </Pane>
